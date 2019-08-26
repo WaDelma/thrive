@@ -1,6 +1,7 @@
+package thrive
+
 import org.junit.Test
 import kotlin.random.Random
-import kotlin.random.nextUInt
 import kotlin.test.assertEquals
 
 class MapTest {

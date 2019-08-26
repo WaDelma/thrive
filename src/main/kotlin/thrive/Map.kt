@@ -1,4 +1,4 @@
-import java.util.*
+package thrive
 
 class Map<T> {
     private val root: Node<T>?
