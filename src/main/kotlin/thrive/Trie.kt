@@ -1,6 +1,6 @@
 package thrive
 
-class Map<T> {
+class Trie<T> {
     private val root: Node<T>?
 
     constructor() {
@@ -11,11 +11,11 @@ class Map<T> {
         this.root = node
     }
 
-    fun insert(key: Int, value: T): Map<T> {
+    fun insert(key: Int, value: T): Trie<T> {
         val pos = 1u shl mask(key.toUInt(), 0).toInt()
         return when (root) {
-            null -> Map(Node(0u, pos, arrayOf(key.toUInt(), value as Any)))
-            else -> Map(root.insert(key.toUInt(), value, 0))
+            null -> Trie(Node(0u, pos, arrayOf(key.toUInt(), value as Any)))
+            else -> Trie(root.insert(key.toUInt(), value, 0))
         }
     }
 
