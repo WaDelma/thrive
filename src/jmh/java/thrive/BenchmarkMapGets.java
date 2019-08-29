@@ -16,6 +16,18 @@ public class BenchmarkMapGets {
 
     int[] xs;
 
+    @Param({"trie1", "trie2"})
+    private static String structure;
+    Trie trie() {
+        if (structure.equals("trie1")) {
+            return new Trie1();
+        } else if (structure.equals("trie2")) {
+            return new Trie2();
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+
     Trie map;
 
     static HashSet<Integer> set;
@@ -23,7 +35,7 @@ public class BenchmarkMapGets {
     @Setup
     public void setup() {
         xs = new int[size];
-        map = new Trie();
+        map = trie();
         var rand = new Random(42);
         set = new HashSet<>(size);
         for (int c = 0; c < size; c++) {
@@ -67,20 +79,18 @@ public class BenchmarkMapGets {
 
     @Benchmark
     @Fork(3)
-    public Trie<Integer> hittingGet(GetState state, Blackhole bh) {
+    public void hittingGet(GetState state, Blackhole bh) {
         for (var i: state.is) {
             bh.consume(map.get(i));
         }
-        return map;
     }
 
     @Benchmark
     @Fork(3)
-    public Trie<Integer> missingGet(GetState state, Blackhole bh) {
+    public void missingGet(GetState state, Blackhole bh) {
         for (var i: state.nis) {
             bh.consume(map.get(i));
         }
-        return map;
     }
 
     public static void main(String[] args) throws RunnerException {
