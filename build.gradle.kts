@@ -11,6 +11,9 @@ buildscript {
         maven {
             url = uri("https://plugins.gradle.org/m2/")
         }
+        flatDir {
+            dirs = setOf(File("libs"))
+        }
     }
     dependencies {
         classpath("me.champeau.gradle:jmh-gradle-plugin:0.4.8")
@@ -29,6 +32,7 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
+    implementation("org.organicdesign:Paguro-KF:3.5.6")
     testCompile("junit:junit:4.12")
     testCompile("org.jetbrains.kotlin:kotlin-test-junit:1.3.41")
 }
