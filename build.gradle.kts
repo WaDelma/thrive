@@ -32,9 +32,14 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
-    implementation("org.organicdesign:Paguro-KF:3.5.6")
     testCompile("junit:junit:4.12")
     testCompile("org.jetbrains.kotlin:kotlin-test-junit:1.3.41")
+}
+
+jmh {
+    dependencies {
+        implementation("org.organicdesign:Paguro-KF:3.5.6")
+    }
 }
 
 tasks.withType<KotlinCompile> {

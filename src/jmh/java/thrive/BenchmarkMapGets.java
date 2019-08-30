@@ -4,6 +4,7 @@ import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
+import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
 import java.util.HashSet;
@@ -36,7 +37,7 @@ public class BenchmarkMapGets {
     public void setup() {
         xs = new int[size];
         map = trie();
-        var rand = new Random(42);
+        Random rand = new Random(42);
         set = new HashSet<>(size);
         for (int c = 0; c < size; c++) {
             while (true) {
@@ -80,7 +81,7 @@ public class BenchmarkMapGets {
     @Benchmark
     @Fork(3)
     public void hittingGet(GetState state, Blackhole bh) {
-        for (var i: state.is) {
+        for (int i: state.is) {
             bh.consume(map.get(i));
         }
     }
@@ -88,13 +89,13 @@ public class BenchmarkMapGets {
     @Benchmark
     @Fork(3)
     public void missingGet(GetState state, Blackhole bh) {
-        for (var i: state.nis) {
+        for (int i: state.nis) {
             bh.consume(map.get(i));
         }
     }
 
     public static void main(String[] args) throws RunnerException {
-        var opt = new OptionsBuilder()
+        Options opt = new OptionsBuilder()
                 .include(BenchmarkMapInserts.class.getSimpleName())
                 .forks(1)
                 .build();

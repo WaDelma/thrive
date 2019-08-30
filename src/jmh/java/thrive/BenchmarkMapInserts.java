@@ -2,6 +2,7 @@ package thrive;
 
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.Runner;
+import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.openjdk.jmh.runner.RunnerException;
 
@@ -15,6 +16,7 @@ public class BenchmarkMapInserts {
 
     @Param({"trie1", "trie2"})
     private static String structure;
+
     Trie trie() {
         if (structure.equals("trie1")) {
             return new Trie1();
@@ -30,8 +32,8 @@ public class BenchmarkMapInserts {
     @Setup
     public void setup() {
         xs = new int[size];
-        var rand = new Random(42);
-        var set = new HashSet<Integer>(size);
+        Random rand = new Random(42);
+        HashSet<Integer> set = new HashSet<Integer>(size);
         for (int c = 0; c < size; c++) {
             while (true) {
                 xs[c] = rand.nextInt();
@@ -46,15 +48,15 @@ public class BenchmarkMapInserts {
 
     @Benchmark
     public Trie<Integer> insert() {
-        var map = trie();
-        for (var i: xs) {
+        Trie map = trie();
+        for (int i: xs) {
             map = map.insert(i, i);
         }
         return map;
     }
 
     public static void main(String[] args) throws RunnerException {
-        var opt = new OptionsBuilder()
+        Options opt = new OptionsBuilder()
             .include(BenchmarkMapInserts.class.getSimpleName())
             .forks(1)
             .build();
