@@ -2,6 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "1.3.41"
+    groovy
     id("me.champeau.gradle.jmh") version "0.4.8"
 }
 
@@ -22,10 +23,6 @@ buildscript {
 
 version = "1.0-SNAPSHOT"
 
-tasks.test {
-    maxHeapSize = "12G"
-}
-
 repositories {
     mavenCentral()
 }
@@ -34,6 +31,8 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     testCompile("junit:junit:4.12")
     testCompile("org.jetbrains.kotlin:kotlin-test-junit:1.3.41")
+    compile("org.freemarker:freemarker:2.3.23")
+    compile("commons-io:commons-io:2.4")
 }
 
 jmh {
@@ -42,6 +41,12 @@ jmh {
     }
 }
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "1.8"
+tasks {
+    test {
+        maxHeapSize = "12G"
+    }
+    withType<KotlinCompile> {
+        kotlinOptions.jvmTarget = "1.8"
+    }
 }
+
