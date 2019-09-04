@@ -1,5 +1,7 @@
 package thrive
 
+private const val BITS: Int = 5
+
 class Trie1<T> : Trie<T> {
     private val root: Node<T>?
 
@@ -56,7 +58,7 @@ private class Node<T>(val nodeMap: UInt, val dataMap: UInt, val values: Array<An
     }
 
     fun insert(key: UInt, value: T, level: Int): Node<T> {
-        val bit = mask(key, 5 * level).toInt()
+        val bit = mask(key, BITS * level).toInt()
         val pos = 1u shl bit
         if ((dataMap shr bit) and 1u == 1u) {
             // There exists key-value pair in the place we would go in the internal storage
@@ -83,7 +85,7 @@ private class Node<T>(val nodeMap: UInt, val dataMap: UInt, val values: Array<An
             // Add node that contains both key-value pairs
             vals[nodeIndex.toInt() - 1] = Node<T>(
                 0u,
-                1u shl mask(values[index] as UInt, 5 * (level + 1)).toInt(),
+                1u shl mask(values[index] as UInt, BITS * (level + 1)).toInt(),
                 arrayOf(values[index], values[index + 1])
             ).insert(key, value, level + 1) as Any
             return Node(nodeMap or pos, dataMap and pos.inv(), vals as Array<Any>)
@@ -109,7 +111,7 @@ private class Node<T>(val nodeMap: UInt, val dataMap: UInt, val values: Array<An
     }
 
     fun get(key: UInt, level: Int): T? {
-        val bit = mask(key, 5 * level).toInt()
+        val bit = mask(key, BITS * level).toInt()
         val pos = 1u shl bit
         if ((dataMap shr bit) and 1u == 1u) {
             val index = (2u * index(this.dataMap, pos)).toInt()
@@ -125,5 +127,5 @@ private class Node<T>(val nodeMap: UInt, val dataMap: UInt, val values: Array<An
     }
 }
 
-private fun mask(index: UInt, shift: Int): UInt = (index shr shift) and 0b11111u
+private fun mask(index: UInt, shift: Int): UInt = (index shr shift) and ((1u shl BITS) - 1u)
 private fun index(bitmap: UInt, pos: UInt): UInt = Integer.bitCount((bitmap and (pos - 1u)).toInt()).toUInt()

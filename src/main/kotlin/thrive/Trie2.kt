@@ -2,6 +2,8 @@ package thrive
 
 import java.util.*
 
+private const val BITS: Int = 5
+
 class Trie2<T> : Trie<T> {
     private val root: Node2<T>?
 
@@ -47,7 +49,7 @@ private class Trunk<T>(val map: Int, val children: Array<Node2<T>>): Node2<T>() 
         println("$pad)")
     }
     override fun insert(key: Int, value: T, level: Int): Node2<T> {
-        val bit = mask(key, 5 * level)
+        val bit = mask(key, BITS * level)
         val pos = 1 shl bit
         val index = index(this.map, pos)
         if ((map ushr bit) and 1 == 1) {
@@ -59,12 +61,12 @@ private class Trunk<T>(val map: Int, val children: Array<Node2<T>>): Node2<T>() 
         val childs = arrayOfNulls<Node2<T>>(children.size + 1)
         children.copyInto(childs, 0, 0, index)
         children.copyInto(childs, index + 1, index, children.size)
-        val bit2 = mask(key, 5 * (level + 1))
+        val bit2 = mask(key, BITS * (level + 1))
         childs[index] = Leaf(1 shl bit2, intArrayOf(key), arrayOf(value as Any))
         return Trunk(map or pos, childs as Array<Node2<T>>)
     }
     override fun get(key: Int, level: Int): T? {
-        val bit = mask(key, 5 * level)
+        val bit = mask(key, BITS * level)
         val pos = 1 shl bit
         if ((map shr bit) and 1 == 1) {
             val index = index(this.map, pos)
@@ -83,7 +85,7 @@ private class Leaf<T>(val map: Int, val keys: IntArray, val values: Array<Any>):
         println("$pad)")
     }
     override fun insert(key: Int, value: T, level: Int): Node2<T> {
-        val bit = mask(key, 5 * level)
+        val bit = mask(key, BITS * level)
         val pos = 1 shl bit
         val index = index(this.map, pos)
         if ((map ushr bit) and 1 == 1) {
@@ -97,7 +99,7 @@ private class Leaf<T>(val map: Int, val keys: IntArray, val values: Array<Any>):
 
             val children = arrayOfNulls<Node2<T>>(keys.size)
             for (i in 0..children.size - 1) {
-                val bit2 = mask(keys[i], 5 * (level + 1))
+                val bit2 = mask(keys[i], BITS * (level + 1))
                 children[i] = Leaf<T>(1 shl bit2, intArrayOf(keys[i]), arrayOf(values[i]))
             }
             children[index] = children[index]!!.insert(key, value, level + 1)
@@ -118,7 +120,7 @@ private class Leaf<T>(val map: Int, val keys: IntArray, val values: Array<Any>):
         return Leaf(map or pos, kes, vals as Array<Any>)
     }
     override fun get(key: Int, level: Int): T? {
-        val bit = mask(key, 5 * level)
+        val bit = mask(key, BITS * level)
         val pos = 1 shl bit
         if ((map shr bit) and 1 == 1) {
             val index = index(this.map, pos)
@@ -130,5 +132,5 @@ private class Leaf<T>(val map: Int, val keys: IntArray, val values: Array<Any>):
     }
 }
 
-private fun mask(index: Int, shift: Int): Int = (index ushr shift) and 0b11111
+private fun mask(index: Int, shift: Int): Int = (index ushr shift) and ((1 shl BITS) - 1)
 private fun index(bitmap: Int, pos: Int): Int = Integer.bitCount((bitmap and (pos - 1)))

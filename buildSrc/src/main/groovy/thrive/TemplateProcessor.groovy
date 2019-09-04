@@ -37,7 +37,6 @@ class TemplateProcessor {
     private process(String fileName, Map properties) {
         def outputFile = new File(outputDir, fileName - TEMPLATE_EXTENSION)
         def template = cfg.getTemplate(fileName)
-
         outputFile.withWriter { out ->
             template.process(properties, out)
         }

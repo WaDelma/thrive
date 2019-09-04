@@ -1,0 +1,6 @@
+repositories { mavenCentral() }
+
+dependencies {
+    compile 'org.freemarker:freemarker:2.3.23'
+    compile 'commons-io:commons-io:2.4'
+}

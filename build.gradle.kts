@@ -1,8 +1,9 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.konan.properties.Properties
+import thrive.TemplateProcessor
 
 plugins {
     kotlin("jvm") version "1.3.41"
-    groovy
     id("me.champeau.gradle.jmh") version "0.4.8"
 }
 
@@ -41,12 +42,42 @@ jmh {
     }
 }
 
+//task("processTemplates") {
+//    val fromDir = "$projectDir/src/templates"
+//    val intoDir = "$buildDir/generated/sources/benchmarks"
+//    doLast {
+//        val properties = Properties()
+//        properties.setProperty("TYPES", "[thrive.Trie1<Int>, thrive.Trie2<Int>]")
+//        TemplateProcessor(fromDir, intoDir).execute(properties)
+//    }
+//
+//    inputs.dir(fromDir)
+////    inputs.file("env/${envName}.properties")
+//    outputs.dir(intoDir)
+//}
+
+val fmpp by configurations.creating
 tasks {
     test {
         maxHeapSize = "12G"
     }
     withType<KotlinCompile> {
         kotlinOptions.jvmTarget = "1.8"
+    }
+    register("fmpp") {
+        group = "sample"
+        val fromDir = "$projectDir/src/templates"
+        val intoDir = "$buildDir/generated/sources/benchmarks"
+        doLast {
+            ant.withGroovyBuilder {
+                "taskdef"(
+                    "name" to "fmpp",
+                    "classname" to "fmpp.tools.AntTask",
+                    "classpath" to fmpp.asPath
+                )
+                "fmpp"("sourceRoot" to fromDir, "outputRoot" to intoDir)
+            }
+        }
     }
 }
 
