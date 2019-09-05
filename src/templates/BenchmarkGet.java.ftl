@@ -1,10 +1,11 @@
 <@pp.dropOutputFile />
 
-<#list TYPES as type>
-<@pp.nestOutputFile name = "Bechmark${type}.java">
+<#list STRUCTURES as structure>
+<@pp.nestOutputFile name = "BenchmarkGet${structure.name}.java">
 
 package thrive;
 
+import ${structure.path};
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 import org.openjdk.jmh.runner.Runner;
@@ -16,20 +17,20 @@ import java.util.HashSet;
 import java.util.Random;
 
 @State(Scope.Thread)
-public class BenchmarkMapGets {
+public class BenchmarkGet${structure.name} {
     @Param({"1", "10", "100", "1000", "10000", "100000", "1000000"})
     static int size = 0;
 
     int[] xs;
 
-    ${type} map;
+    ${structure.type} map;
 
     static HashSet< Integer> set;
 
     @Setup
     public void setup() {
         xs = new int[size];
-        map = ${type}();
+        map = new ${structure.type}();
         Random rand = new Random(42);
         set = new HashSet<>(size);
         for (int c = 0; c < size; c++) {
@@ -73,7 +74,7 @@ public class BenchmarkMapGets {
 
     @Benchmark
     @Fork(3)
-    public void hittingGet(GetState state, Blackhole bh) {
+    public void hittingGet${structure.name}(GetState state, Blackhole bh) {
         for (int i: state.is) {
             bh.consume(map.get(i));
         }
@@ -81,7 +82,7 @@ public class BenchmarkMapGets {
 
     @Benchmark
     @Fork(3)
-    public void missingGet(GetState state, Blackhole bh) {
+    public void missingGet${structure.name}(GetState state, Blackhole bh) {
         for (int i: state.nis) {
             bh.consume(map.get(i));
         }
@@ -89,7 +90,7 @@ public class BenchmarkMapGets {
 
     public static void main(String[] args) throws RunnerException {
         Options opt = new OptionsBuilder()
-                .include(BenchmarkMapInserts.class.getSimpleName())
+                .include(BenchmarkGet${structure.name}.class.getSimpleName())
                 .forks(1)
                 .build();
         new Runner(opt).run();

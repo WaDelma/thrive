@@ -49,7 +49,7 @@ tasks {
     task fmpp {
         group = "sample"
         def fromDir = "$projectDir/src/templates"
-        def intoDir = "$buildDir/generated/sources/benchmarks"
+        def intoDir = "$projectDir/src/jmh/java/thrive"
         doLast {
             ant.taskdef(name: "fmpp", classname: "fmpp.tools.AntTask") {
                 classpath {
@@ -59,7 +59,20 @@ tasks {
             ant.fmpp(
                     sourceRoot: fromDir,
                     outputRoot: intoDir,
-                    data: "TYPES: ['thrive.Trie1<Int>', 'thrive.Trie2<Int>']"
+                    data: """
+                        STRUCTURES: [
+                            {
+                                type: 'Trie1<Integer>',
+                                path: 'thrive.Trie1',
+                                name: 'Trie1'
+                            },
+                            {
+                                type: 'Trie2<Integer>',
+                                path: 'thrive.Trie2',
+                                name: 'Trie2'
+                            }
+                        ]
+                    """
             )
         }
     }

@@ -1,5 +1,11 @@
+<@pp.dropOutputFile />
+
+<#list STRUCTURES as structure>
+<@pp.nestOutputFile name = "BenchmarkInsert${structure.name}.java">
+
 package thrive;
 
+import ${structure.path};
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.options.Options;
@@ -10,30 +16,20 @@ import java.util.HashSet;
 import java.util.Random;
 
 @State(Scope.Thread)
-public class BenchmarkMapInserts {
+public class BenchmarkInsert${structure.name} {
     @Param({"1", "10", "100", "1000", "10000", "100000", "1000000"})
     int size;
 
-    @Param({"trie1", "trie2"})
-    private static String structure;
-
-    Trie trie() {
-        if (structure.equals("trie1")) {
-            return new Trie1();
-        } else if (structure.equals("trie2")) {
-            return new Trie2();
-        } else {
-            throw new UnsupportedOperationException();
-        }
-    }
+    ${structure.type} map;
 
     int[] xs;
 
     @Setup
     public void setup() {
         xs = new int[size];
+        map = new ${structure.type}();
         Random rand = new Random(42);
-        HashSet<Integer> set = new HashSet<Integer>(size);
+        HashSet< Integer> set = new HashSet< Integer>(size);
         for (int c = 0; c < size; c++) {
             while (true) {
                 xs[c] = rand.nextInt();
@@ -47,8 +43,7 @@ public class BenchmarkMapInserts {
     }
 
     @Benchmark
-    public Trie<Integer> insert() {
-        Trie map = trie();
+    public ${structure.type} insert${structure.name}() {
         for (int i: xs) {
             map = map.insert(i, i);
         }
@@ -57,9 +52,11 @@ public class BenchmarkMapInserts {
 
     public static void main(String[] args) throws RunnerException {
         Options opt = new OptionsBuilder()
-            .include(BenchmarkMapInserts.class.getSimpleName())
+            .include(BenchmarkInsert${structure.name}.class.getSimpleName())
             .forks(1)
             .build();
         new Runner(opt).run();
     }
 }
+</@pp.nestOutputFile>
+</#list>
