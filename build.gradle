@@ -1,0 +1,67 @@
+
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            url = uri("https://plugins.gradle.org/m2/")
+        }
+        flatDir {
+            dirs = [new File("libs"),]
+        }
+    }
+    dependencies {
+        classpath("me.champeau.gradle:jmh-gradle-plugin:0.4.8")
+    }
+}
+
+plugins {
+    id("org.jetbrains.kotlin.jvm") version "1.3.41"
+    id("me.champeau.gradle.jmh") version "0.4.8"
+}
+
+version = "1.0-SNAPSHOT"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    testCompile("junit:junit:4.12")
+    testCompile("org.jetbrains.kotlin:kotlin-test-junit:1.3.41")
+    compile("org.freemarker:freemarker:2.3.23")
+    compile("commons-io:commons-io:2.4")
+}
+
+jmh {
+    dependencies {
+        implementation("org.organicdesign:Paguro-KF:3.5.6")
+    }
+}
+
+tasks {
+    test {
+        maxHeapSize = "12G"
+    }
+    compileKotlin {
+        kotlinOptions.jvmTarget = "1.8"
+    }
+    task fmpp {
+        group = "sample"
+        def fromDir = "$projectDir/src/templates"
+        def intoDir = "$buildDir/generated/sources/benchmarks"
+        doLast {
+            ant.taskdef(name: "fmpp", classname: "fmpp.tools.AntTask") {
+                classpath {
+                    fileset(dir: "libs", includes: "*.jar")
+                }
+            }
+            ant.fmpp(
+                    sourceRoot: fromDir,
+                    outputRoot: intoDir,
+                    data: "TYPES: ['thrive.Trie1<Int>', 'thrive.Trie2<Int>']"
+            )
+        }
+    }
+}
+
