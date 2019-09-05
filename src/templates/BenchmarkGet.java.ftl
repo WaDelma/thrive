@@ -30,7 +30,7 @@ public class BenchmarkGet${structure.name} {
     @Setup
     public void setup() {
         xs = new int[size];
-        map = new ${structure.type}();
+        map = ${structure.creator};
         Random rand = new Random(42);
         set = new HashSet<>(size);
         for (int c = 0; c < size; c++) {
@@ -40,7 +40,7 @@ public class BenchmarkGet${structure.name} {
                     continue;
                 }
                 set.add(xs[c]);
-                map = map.insert(xs[c], xs[c]);
+                map = map.${structure.insert}(xs[c], xs[c]);
                 break;
             }
         }

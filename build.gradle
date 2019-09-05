@@ -62,14 +62,39 @@ tasks {
                     data: """
                         STRUCTURES: [
                             {
-                                type: 'Trie1<Integer>',
-                                path: 'thrive.Trie1',
+                                type: 'Trie1<Integer>'
+                                creator: 'new Trie1<Integer>()'
+                                path: 'thrive.Trie1'
+                                insert: 'insert'
                                 name: 'Trie1'
                             },
                             {
-                                type: 'Trie2<Integer>',
-                                path: 'thrive.Trie2',
+                                type: 'Trie2<Integer>'
+                                creator: 'new Trie2<Integer>()'
+                                path: 'thrive.Trie2'
+                                insert: 'insert'
                                 name: 'Trie2'
+                            },
+                            {
+                                type: 'PersistentHashMap<Integer, Integer>'
+                                creator: 'PersistentHashMap.empty()'
+                                path: 'org.organicdesign.fp.collections.PersistentHashMap'
+                                insert: 'assoc'
+                                name: 'PersistentHashMap'
+                            },
+                            {
+                                type: 'PersistentTreeMap<Integer, Integer>'
+                                creator: 'PersistentTreeMap.empty()'
+                                path: 'org.organicdesign.fp.collections.PersistentTreeMap'
+                                insert: 'assoc'
+                                name: 'PersistentTreeMap'
+                            },
+                            {
+                                type: 'RrbTree<Integer>'
+                                creator: 'RrbTree.empty()'
+                                path: 'org.organicdesign.fp.collections.RrbTree'
+                                insert: 'insert'
+                                name: 'RrbTree'
                             }
                         ]
                     """

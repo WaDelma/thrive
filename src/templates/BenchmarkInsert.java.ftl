@@ -27,7 +27,7 @@ public class BenchmarkInsert${structure.name} {
     @Setup
     public void setup() {
         xs = new int[size];
-        map = new ${structure.type}();
+        map = ${structure.creator};
         Random rand = new Random(42);
         HashSet< Integer> set = new HashSet< Integer>(size);
         for (int c = 0; c < size; c++) {
@@ -45,7 +45,7 @@ public class BenchmarkInsert${structure.name} {
     @Benchmark
     public ${structure.type} insert${structure.name}() {
         for (int i: xs) {
-            map = map.insert(i, i);
+            map = map.${structure.insert}(i, i);
         }
         return map;
     }
