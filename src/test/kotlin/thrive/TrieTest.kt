@@ -15,7 +15,9 @@ class TrieTest(val trie: () -> Trie<String>, val desc: String) {
         @JvmStatic
         fun data() = arrayOf(
             arrayOf<Any>({ Trie1<String>() }, "Trie1"),
-            arrayOf<Any>({ Trie2<String>() }, "Trie2")
+            arrayOf<Any>({ Trie2<String>() }, "Trie2"),
+            arrayOf<Any>({ Trie1j<String>() }, "Trie1j"),
+            arrayOf<Any>({ Trie2j<String>() }, "Trie2j")
         )
     }
 

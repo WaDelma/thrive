@@ -69,11 +69,25 @@ tasks {
                                 name: 'Trie1'
                             },
                             {
+                                type: 'Trie1j<Integer>'
+                                creator: 'new Trie1j<Integer>()'
+                                path: 'thrive.Trie1j'
+                                insert: 'insert'
+                                name: 'Trie1j'
+                            },
+                            {
                                 type: 'Trie2<Integer>'
                                 creator: 'new Trie2<Integer>()'
                                 path: 'thrive.Trie2'
                                 insert: 'insert'
                                 name: 'Trie2'
+                            },
+                            {
+                                type: 'Trie2j<Integer>'
+                                creator: 'new Trie2j<Integer>()'
+                                path: 'thrive.Trie2j'
+                                insert: 'insert'
+                                name: 'Trie2j'
                             },
                             {
                                 type: 'PersistentHashMap<Integer, Integer>'
