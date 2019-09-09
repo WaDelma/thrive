@@ -21,7 +21,7 @@ public class BenchmarkGet${structure.name} {
     @Param({"1", "10", "100", "1000", "10000", "100000", "1000000"})
     static int size = 0;
 
-    int[] xs;
+    static int[] xs;
 
     ${structure.type} map;
 
