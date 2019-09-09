@@ -1,7 +1,7 @@
 <@pp.dropOutputFile />
 
 <#list STRUCTURES as structure>
-<@pp.nestOutputFile name = "BenchmarkGet${structure.name}.java">
+<@pp.nestOutputFile name = "BenchmarkGetLinear${structure.name}.java">
 
 package thrive;
 
@@ -17,40 +17,23 @@ import java.util.HashSet;
 import java.util.Random;
 
 @State(Scope.Thread)
-public class BenchmarkGet${structure.name} {
+public class BenchmarkGetLinear${structure.name} {
     @Param({"1", "10", "100", "1000", "10000", "100000", "1000000"})
     static int size = 0;
 
-    int[] xs;
-
     ${structure.type} map;
-
-    static HashSet< Integer> set;
 
     @Setup
     public void setup() {
-        xs = new int[size];
         map = ${structure.creator};
-        Random rand = new Random(42);
-        set = new HashSet<>(size);
         for (int c = 0; c < size; c++) {
-            while (true) {
-                xs[c] = rand.nextInt();
-                if (set.contains(xs[c])) {
-                    continue;
-                }
-                set.add(xs[c]);
-                map = map.${structure.insert}(xs[c], xs[c]);
-                break;
-            }
+            map = map.${structure.insert}(c, c);
         }
     }
-
 
     @State(Scope.Thread)
     public static class GetState {
         public int[] is = new int[100];
-        public int[] nis = new int[100];
 
         @Setup
         public void setup() {
@@ -58,39 +41,22 @@ public class BenchmarkGet${structure.name} {
             rand.nextInt();
             rand.nextInt();
             for (int n = 0; n < is.length; n++) {
-                is[n] = xs[rand.nextInt(size)];
-            }
-            for (int n = 0; n < nis.length; n++) {
-                while (true) {
-                    nis[n] = rand.nextInt();
-                    if (set.contains(nis[n])) {
-                        continue;
-                    }
-                    break;
-                }
+                is[n] = rand.nextInt(size);
             }
         }
     }
 
     @Benchmark
     @Fork(3)
-    public void hittingGet${structure.name}(GetState state, Blackhole bh) {
+    public void hittingGetLinear${structure.name}(GetState state, Blackhole bh) {
         for (int i: state.is) {
-            bh.consume(map.get(i));
-        }
-    }
-
-    @Benchmark
-    @Fork(3)
-    public void missingGet${structure.name}(GetState state, Blackhole bh) {
-        for (int i: state.nis) {
             bh.consume(map.get(i));
         }
     }
 
     public static void main(String[] args) throws RunnerException {
         Options opt = new OptionsBuilder()
-                .include(BenchmarkGet${structure.name}.class.getSimpleName())
+                .include(BenchmarkGetLinear${structure.name}.class.getSimpleName())
                 .forks(1)
                 .build();
         new Runner(opt).run();

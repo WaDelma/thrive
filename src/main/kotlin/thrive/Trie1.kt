@@ -1,5 +1,7 @@
 package thrive
 
+import java.util.ArrayList
+
 private const val BITS: Int = 5
 
 class Trie1<T> : Trie<T> {
@@ -29,9 +31,36 @@ class Trie1<T> : Trie<T> {
             else -> root.debug(0)
         }
     }
+
+    override fun entries() = Trie1Iterator(ArrayList<Node<T>>().also { root?.let(it::add) }, 0)
+
+    inner class Trie1Iterator internal constructor (private val stack: ArrayList<Node<T>>, private var index: Int): Iterator<Pair<Int, T>> {
+        override fun next(): Pair<Int, T> {
+            while (true) {
+                val node = stack.pop()
+                val datum = Integer.bitCount(node.dataMap.toInt())
+                if (index < datum) {
+                    stack.add(node)
+                    return ((node.values[2 * index] as UInt).toInt() to node.values[2 * index + 1] as T).also {
+                        index += 1
+                    }
+                } else {
+                    (0..(node.values.size - datum)).forEach {
+                        stack.add(node.values[it] as Node<T>)
+                    }
+                }
+            }
+        }
+
+        override fun hasNext(): Boolean = when (stack.size) {
+            0 -> false
+            1 -> index < Integer.bitCount(stack.peek().dataMap.toInt())
+            else -> true
+        }
+    }
 }
 
-private class Node<T>(val nodeMap: UInt, val dataMap: UInt, val values: Array<Any>) {
+internal class Node<T>(val nodeMap: UInt, val dataMap: UInt, val values: Array<Any>) {
     fun debug(level: Int) {
         val pad = generateSequence { " " }.take(level).joinToString("")
         println("${pad}Node(nodeMap=${nodeMap.toString(2)}, dataMap=${dataMap.toString(2)}")
@@ -65,7 +94,6 @@ private class Node<T>(val nodeMap: UInt, val dataMap: UInt, val values: Array<An
             val index = (2u * index(this.dataMap, pos)).toInt()
             if (key == values[index] as UInt) {
                 // They had the same key, so we are going to replace the value
-                // TODO: Would it be better to not copy the old value? (arrayOfNulls)
                 val vals = values.copyOf()
                 vals[index + 1] = value as Any;
                 return Node(nodeMap, dataMap, vals)

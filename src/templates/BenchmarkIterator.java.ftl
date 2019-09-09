@@ -1,7 +1,7 @@
 <@pp.dropOutputFile />
 
 <#list STRUCTURES as structure>
-<@pp.nestOutputFile name = "BenchmarkGet${structure.name}.java">
+<@pp.nestOutputFile name = "BenchmarkIterator${structure.name}.java">
 
 package thrive;
 
@@ -15,9 +15,10 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 
 import java.util.HashSet;
 import java.util.Random;
+import java.util.Iterator;
 
 @State(Scope.Thread)
-public class BenchmarkGet${structure.name} {
+public class BenchmarkIterator${structure.name} {
     @Param({"1", "10", "100", "1000", "10000", "100000", "1000000"})
     static int size = 0;
 
@@ -39,58 +40,23 @@ public class BenchmarkGet${structure.name} {
                 if (set.contains(xs[c])) {
                     continue;
                 }
-                set.add(xs[c]);
                 map = map.${structure.insert}(xs[c], xs[c]);
                 break;
             }
         }
     }
 
-
-    @State(Scope.Thread)
-    public static class GetState {
-        public int[] is = new int[100];
-        public int[] nis = new int[100];
-
-        @Setup
-        public void setup() {
-            Random rand = new Random(Thread.currentThread().getId());
-            rand.nextInt();
-            rand.nextInt();
-            for (int n = 0; n < is.length; n++) {
-                is[n] = xs[rand.nextInt(size)];
-            }
-            for (int n = 0; n < nis.length; n++) {
-                while (true) {
-                    nis[n] = rand.nextInt();
-                    if (set.contains(nis[n])) {
-                        continue;
-                    }
-                    break;
-                }
-            }
-        }
-    }
-
     @Benchmark
-    @Fork(3)
-    public void hittingGet${structure.name}(GetState state, Blackhole bh) {
-        for (int i: state.is) {
-            bh.consume(map.get(i));
-        }
-    }
-
-    @Benchmark
-    @Fork(3)
-    public void missingGet${structure.name}(GetState state, Blackhole bh) {
-        for (int i: state.nis) {
-            bh.consume(map.get(i));
+    public void iterate${structure.name}(Blackhole bh) {
+        Iterator iter = map.${structure.iterator}();
+        while (iter.hasNext()) {
+            bh.consume(iter.next());
         }
     }
 
     public static void main(String[] args) throws RunnerException {
         Options opt = new OptionsBuilder()
-                .include(BenchmarkGet${structure.name}.class.getSimpleName())
+                .include(BenchmarkIterator${structure.name}.class.getSimpleName())
                 .forks(1)
                 .build();
         new Runner(opt).run();

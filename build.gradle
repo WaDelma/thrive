@@ -46,6 +46,11 @@ jmh {
 }
 
 tasks {
+    clean {
+        doFirst {
+            delete "$projectDir/src/jmh"
+        }
+    }
     test {
         maxHeapSize = "12G"
     }
@@ -53,7 +58,7 @@ tasks {
         kotlinOptions.jvmTarget = "1.8"
     }
     task fmpp {
-        group = "sample"
+        group = "other"
         def fromDir = "$projectDir/src/templates"
         def intoDir = "$projectDir/src/jmh/java/thrive"
         doLast {
@@ -73,6 +78,7 @@ tasks {
                                 path: 'thrive.Trie1'
                                 insert: 'insert'
                                 name: 'Trie1'
+                                iterator: 'entries'
                             },
                             {
                                 type: 'Trie1j<Integer>'
@@ -80,6 +86,7 @@ tasks {
                                 path: 'thrive.Trie1j'
                                 insert: 'insert'
                                 name: 'Trie1j'
+                                iterator: 'entries'
                             },
                             {
                                 type: 'Trie2<Integer>'
@@ -87,6 +94,7 @@ tasks {
                                 path: 'thrive.Trie2'
                                 insert: 'insert'
                                 name: 'Trie2'
+                                iterator: 'entries'
                             },
                             {
                                 type: 'Trie2j<Integer>'
@@ -94,6 +102,7 @@ tasks {
                                 path: 'thrive.Trie2j'
                                 insert: 'insert'
                                 name: 'Trie2j'
+                                iterator: 'entries'
                             },
                             {
                                 type: 'PersistentHashMap<Integer, Integer>'
@@ -101,6 +110,7 @@ tasks {
                                 path: 'org.organicdesign.fp.collections.PersistentHashMap'
                                 insert: 'assoc'
                                 name: 'PersistentHashMap'
+                                iterator: 'iterator'
                             },
                             {
                                 type: 'PersistentTreeMap<Integer, Integer>'
@@ -108,13 +118,7 @@ tasks {
                                 path: 'org.organicdesign.fp.collections.PersistentTreeMap'
                                 insert: 'assoc'
                                 name: 'PersistentTreeMap'
-                            },
-                            {
-                                type: 'RrbTree<Integer>'
-                                creator: 'RrbTree.empty()'
-                                path: 'org.organicdesign.fp.collections.RrbTree'
-                                insert: 'insert'
-                                name: 'RrbTree'
+                                iterator: 'iterator'
                             }
                         ]
                     """

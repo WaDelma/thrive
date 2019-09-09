@@ -1,7 +1,10 @@
 package thrive;
 
+import kotlin.Pair;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -44,6 +47,49 @@ public final class Trie1j<T> implements Trie<T> {
             root.debug(0);
         } else {
             System.out.println("null");
+        }
+    }
+
+    public Iterator<Pair<Integer, T>> entries() {
+        return new Trie1jIterator(new ArrayList<>() {{
+            if (root != null) {
+                add(root);
+            }
+        }});
+    }
+
+    private class Trie1jIterator implements Iterator<Pair<Integer, T>> {
+        private ArrayList<Node<T>> stack;
+        private int index;
+        private Trie1jIterator(ArrayList<Node<T>> stack) {
+            this.stack = stack;
+        }
+
+        @Override
+        public Pair<Integer, T> next() {
+            while (true) {
+                var node = stack.remove(stack.size() - 1);
+                var datum = Integer.bitCount(node.dataMap);
+                if (index < datum) {
+                    stack.add(node);
+                    var res = new Pair<>((Integer) node.values[2 * index], (T) node.values[2 * index + 1]);
+                    index += 1;
+                    return res;
+                } else {
+                    for (var i = 0; i <= (node.values.length - datum); i++) {
+                        stack.add((Node<T>) node.values[i]);
+                    }
+                }
+            }
+        }
+
+        @Override
+        public boolean hasNext() {
+            switch (stack.size()) {
+                case 0: return false;
+                case 1: return index < Integer.bitCount(stack.get(stack.size() - 1).dataMap);
+                default: return true;
+            }
         }
     }
 

@@ -1,5 +1,6 @@
 package thrive;
 
+import kotlin.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -45,6 +46,59 @@ public final class Trie2j<T> implements Trie<T> {
             root.debug(0);
         } else {
             System.out.println("null");
+        }
+    }
+
+    @Override
+    public Iterator<Pair<Integer, T>> entries() {
+        return new Trie2jIterator(new ArrayList<>() {{
+            if (root != null) {
+                add(root);
+            }
+        }});
+    }
+
+    class Trie2jIterator implements Iterator<Pair<Integer, T>> {
+        private ArrayList<Object> stack;
+        private int index;
+
+        private Trie2jIterator(ArrayList<Object> stack) {
+            this.stack = stack;
+        }
+
+        @Override
+        public Pair<Integer, T> next() {
+            while (true) {
+                var node = stack.remove(stack.size() - 1);
+                if (node instanceof Trunk) {
+                    stack.addAll(Arrays.asList(((Trunk) node).children));
+                } else if (node instanceof Leaf) {
+                    var n = (Leaf) node;
+                    if (index < n.values.length) {
+                        var res = new Pair<>(n.keys[index], (T) n.values[index]);
+                        stack.add(node);
+                        index += 1;
+                        return res;
+                    } else {
+                        index = 0;
+                    }
+                }
+            }
+        }
+
+        @Override
+        public boolean hasNext() {
+            switch (stack.size()) {
+                case 0: return false;
+                case 1: {
+                    var node = stack.get(stack.size() - 1);
+                    if (node instanceof Leaf) {
+                        return index < ((Leaf) node).values.length;
+                    }
+                    return true;
+                }
+                default: return true;
+            }
         }
     }
 

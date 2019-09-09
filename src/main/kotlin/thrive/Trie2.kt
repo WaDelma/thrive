@@ -4,6 +4,9 @@ import java.util.*
 
 private const val BITS: Int = 5
 
+fun <T> ArrayList<T>.pop(): T = this.removeAt(this.size - 1)
+fun <T> ArrayList<T>.peek(): T = this[this.size - 1]
+
 class Trie2<T> : Trie<T> {
     private val root: Node2<T>?
 
@@ -31,9 +34,40 @@ class Trie2<T> : Trie<T> {
             else -> root.debug(0)
         }
     }
+
+    override fun entries() = Trie2Iterator(ArrayList<Node2<T>>().also { root?.let(it::add) }, 0)
+
+    inner class Trie2Iterator internal constructor (private val stack: ArrayList<Node2<T>>, private var index: Int): Iterator<Pair<Int, T>> {
+        override fun next(): Pair<Int, T> {
+            while (true) {
+                when (val node = stack.pop()) {
+                    is Trunk -> stack.addAll(node.children)
+                    is Leaf -> {
+                        if (index < node.values.size) {
+                            return node.keys[index] to (node.values[index] as T).also {
+                                stack.add(node)
+                                index += 1
+                            }
+                        } else {
+                            index = 0
+                        }
+                    }
+                }
+            }
+        }
+
+        override fun hasNext(): Boolean = when (stack.size) {
+            0 -> false
+            1 -> when (val node = stack.peek()) {
+                is Leaf -> index < node.values.size
+                else -> true
+            }
+            else -> true
+        }
+    }
 }
 
-private sealed class Node2<T> {
+internal sealed class Node2<T> {
     abstract fun debug(level: Int)
     abstract fun insert(key: Int, value: T, level: Int): Node2<T>
     abstract fun get(key: Int, level: Int): T?
@@ -53,7 +87,6 @@ private class Trunk<T>(val map: Int, val children: Array<Node2<T>>): Node2<T>() 
         val pos = 1 shl bit
         val index = index(this.map, pos)
         if ((map ushr bit) and 1 == 1) {
-            // TODO: Would it be better to not copy the old value? (arrayOfNulls)
             val childs = children.copyOf()
             childs[index] = childs[index].insert(key, value, level + 1)
             return Trunk(map, childs)

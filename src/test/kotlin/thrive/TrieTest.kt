@@ -120,7 +120,7 @@ class TrieTest(val trie: () -> Trie<String>, val desc: String) {
     fun `adding values with random keys work`() {
         var map = trie()
         val rand = Random(42)
-        val added = generateSequence(rand::nextInt).take(10000).toSet()
+        val added = generateSequence(rand::nextInt).take(5000).toSet()
         added.forEachIndexed { i, key ->
             map = map.insert(key, "v$key $i")
             added.asSequence().take(i).forEachIndexed {i, key ->
@@ -176,6 +176,73 @@ class TrieTest(val trie: () -> Trie<String>, val desc: String) {
                 println(it.toFloat() / amount.toFloat())
             }
             assertEquals(it, map.get(it))
+        }
+    }
+
+    @Test
+    fun `iterating empty map is empty`() {
+        assert(!trie().entries().hasNext())
+    }
+
+    @Test
+    fun `iterating singleton map is singleton`() {
+        val map = trie().insert(1, "1")
+        val iter = map.entries()
+        assert(iter.hasNext())
+        assertEquals(1 to "1", iter.next())
+        assert(!iter.hasNext())
+    }
+
+    @Test
+    fun `value can be taken from iterator without checking if it has one`() {
+        val map = trie().insert(1, "1")
+        assertEquals(1 to "1", map.entries().next())
+    }
+
+    @Test
+    fun `iterating 31 entries works`() {
+        var map = trie()
+        (0..30).forEach {
+            map = map.insert(it, "v$it")
+        }
+        val set = mutableSetOf<Int>()
+        map.entries().forEachRemaining { (n, s) ->
+            set.add(n)
+            assertEquals("v$n", s)
+        }
+        assertEquals(31, set.size)
+        (0..30).forEach {
+            assert(it in set)
+        }
+    }
+
+    @Test
+    fun `iterating 32 entries works`() {
+        var map = trie()
+        (0..31).forEach {
+            map = map.insert(it, "v$it")
+        }
+        val set = mutableSetOf<Int>()
+        map.entries().forEachRemaining { (n, s) ->
+            set.add(n)
+            assertEquals("v$n", s)
+        }
+        assertEquals(32, set.size)
+        (0..31).forEach {
+            assert(it in set)
+        }
+    }
+
+    @Test
+    fun `Iterating lots of values works`() {
+        var map = trie()
+        val rand = Random(42)
+        val added = generateSequence(rand::nextInt).take(10000).toSet()
+        added.forEachIndexed { i, key ->
+            map = map.insert(key, "v$key $i")
+        }
+        map.entries().forEachRemaining { (k, v) ->
+            assert(k in added)  { v }
         }
     }
 }
