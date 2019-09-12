@@ -33,7 +33,7 @@ public class BenchmarkIteratorLinear${structure.name} {
     }
 
     @Benchmark
-    public void iterate${structure.name}(Blackhole bh) {
+    public void iterateLinear${structure.name}(Blackhole bh) {
         Iterator iter = map.${structure.iterator}();
         while (iter.hasNext()) {
             bh.consume(iter.next());
