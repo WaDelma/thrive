@@ -51,11 +51,11 @@ public final class Trie2j<T> implements Trie<T> {
 
     @Override
     public Iterator<Pair<Integer, T>> entries() {
-        return new Trie2jIterator(new ArrayList<>() {{
-            if (root != null) {
-                add(root);
-            }
-        }});
+        var list = new ArrayList<>();
+        if (root != null) {
+            list.add(root);
+        }
+        return new Trie2jIterator(list);
     }
 
     class Trie2jIterator implements Iterator<Pair<Integer, T>> {
@@ -90,13 +90,12 @@ public final class Trie2j<T> implements Trie<T> {
         public boolean hasNext() {
             switch (stack.size()) {
                 case 0: return false;
-                case 1: {
+                case 1:
                     var node = stack.get(stack.size() - 1);
                     if (node instanceof Leaf) {
                         return index < ((Leaf) node).values.length;
                     }
                     return true;
-                }
                 default: return true;
             }
         }

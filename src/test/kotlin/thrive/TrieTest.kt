@@ -200,23 +200,6 @@ class TrieTest(val trie: () -> Trie<String>, val desc: String) {
     }
 
     @Test
-    fun `iterating 31 entries works`() {
-        var map = trie()
-        (0..30).forEach {
-            map = map.insert(it, "v$it")
-        }
-        val set = mutableSetOf<Int>()
-        map.entries().forEachRemaining { (n, s) ->
-            set.add(n)
-            assertEquals("v$n", s)
-        }
-        assertEquals(31, set.size)
-        (0..30).forEach {
-            assert(it in set)
-        }
-    }
-
-    @Test
     fun `iterating 32 entries works`() {
         var map = trie()
         (0..31).forEach {
@@ -227,8 +210,42 @@ class TrieTest(val trie: () -> Trie<String>, val desc: String) {
             set.add(n)
             assertEquals("v$n", s)
         }
-        assertEquals(32, set.size)
+        assertEquals(32, set.size, set.toString())
         (0..31).forEach {
+            assert(it in set)
+        }
+    }
+
+    @Test
+    fun `iterating 33 entries works`() {
+        var map = trie()
+        (0..32).forEach {
+            map = map.insert(it, "v$it")
+        }
+        val set = mutableSetOf<Int>()
+        map.entries().forEachRemaining { (n, s) ->
+            set.add(n)
+            assertEquals("v$n", s)
+        }
+        assertEquals(33, set.size, set.toString())
+        (0..32).forEach {
+            assert(it in set)
+        }
+    }
+
+    @Test
+    fun `iterating 65 entries works`() {
+        var map = trie()
+        (0..64).forEach {
+            map = map.insert(it, "v$it")
+        }
+        val set = mutableSetOf<Int>()
+        map.entries().forEachRemaining { (n, s) ->
+            set.add(n)
+            assertEquals("v$n", s)
+        }
+        assertEquals(65, set.size, set.toString())
+        (0..64).forEach {
             assert(it in set)
         }
     }
@@ -237,12 +254,16 @@ class TrieTest(val trie: () -> Trie<String>, val desc: String) {
     fun `Iterating lots of values works`() {
         var map = trie()
         val rand = Random(42)
-        val added = generateSequence(rand::nextInt).take(10000).toSet()
+        val added = generateSequence(rand::nextInt).take(10000).toHashSet()
+        val expect = hashSetOf<Int>()
         added.forEachIndexed { i, key ->
+            expect.add(i)
             map = map.insert(key, "v$key $i")
         }
         map.entries().forEachRemaining { (k, v) ->
-            assert(k in added)  { v }
+            assert(added.remove(k))  { v }
+            assert("v$k " in v) { v }
         }
+        assert(added.isEmpty()) { added }
     }
 }

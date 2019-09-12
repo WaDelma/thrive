@@ -51,34 +51,40 @@ public final class Trie1j<T> implements Trie<T> {
     }
 
     public Iterator<Pair<Integer, T>> entries() {
-        return new Trie1jIterator(new ArrayList<>() {{
-            if (root != null) {
-                add(root);
-            }
-        }});
+        var list = new ArrayList<Node<T>>();
+        if (root != null) {
+            list.add(root);
+        }
+        return new Trie1jIterator(list);
     }
 
     private class Trie1jIterator implements Iterator<Pair<Integer, T>> {
         private ArrayList<Node<T>> stack;
         private int index;
+        private boolean first = true;
         private Trie1jIterator(ArrayList<Node<T>> stack) {
             this.stack = stack;
         }
 
         @Override
         public Pair<Integer, T> next() {
+            first = false;
             while (true) {
                 var node = stack.remove(stack.size() - 1);
                 var datum = Integer.bitCount(node.dataMap);
+                if (index == 0) {
+                    var nodes = Integer.bitCount(node.nodeMap);
+                    for (var i = 0; i < nodes; i++) {
+                        stack.add((Node<T>) node.values[node.values.length - 1 - i]);
+                    }
+                }
                 if (index < datum) {
                     stack.add(node);
                     var res = new Pair<>((Integer) node.values[2 * index], (T) node.values[2 * index + 1]);
                     index += 1;
                     return res;
                 } else {
-                    for (var i = 0; i <= (node.values.length - datum); i++) {
-                        stack.add((Node<T>) node.values[i]);
-                    }
+                    index = 0;
                 }
             }
         }
@@ -87,7 +93,7 @@ public final class Trie1j<T> implements Trie<T> {
         public boolean hasNext() {
             switch (stack.size()) {
                 case 0: return false;
-                case 1: return index < Integer.bitCount(stack.get(stack.size() - 1).dataMap);
+                case 1: return first || index < Integer.bitCount(stack.get(stack.size() - 1).dataMap);
                 default: return true;
             }
         }

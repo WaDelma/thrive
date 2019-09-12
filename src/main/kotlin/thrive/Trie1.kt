@@ -32,29 +32,34 @@ class Trie1<T> : Trie<T> {
         }
     }
 
-    override fun entries() = Trie1Iterator(ArrayList<Node<T>>().also { root?.let(it::add) }, 0)
+    override fun entries() = Trie1Iterator(ArrayList<Node<T>>().also { root?.let(it::add) })
 
-    inner class Trie1Iterator internal constructor (private val stack: ArrayList<Node<T>>, private var index: Int): Iterator<Pair<Int, T>> {
+    inner class Trie1Iterator internal constructor (private val stack: ArrayList<Node<T>>, private var index: Int = 0, private var first: Boolean = true): Iterator<Pair<Int, T>> {
         override fun next(): Pair<Int, T> {
+            first = false
             while (true) {
                 val node = stack.pop()
                 val datum = Integer.bitCount(node.dataMap.toInt())
+                if (index == 0) {
+                    val nodes = Integer.bitCount(node.nodeMap.toInt())
+                    (0 until nodes).forEach {
+                        stack.add(node.values[node.values.lastIndex - it] as Node<T>)
+                    }
+                }
                 if (index < datum) {
                     stack.add(node)
                     return ((node.values[2 * index] as UInt).toInt() to node.values[2 * index + 1] as T).also {
                         index += 1
                     }
                 } else {
-                    (0..(node.values.size - datum)).forEach {
-                        stack.add(node.values[it] as Node<T>)
-                    }
+                    index = 0
                 }
             }
         }
 
         override fun hasNext(): Boolean = when (stack.size) {
             0 -> false
-            1 -> index < Integer.bitCount(stack.peek().dataMap.toInt())
+            1 -> first || index <  Integer.bitCount(stack.peek().dataMap.toInt())
             else -> true
         }
     }
@@ -119,7 +124,7 @@ internal class Node<T>(val nodeMap: UInt, val dataMap: UInt, val values: Array<A
             return Node(nodeMap or pos, dataMap and pos.inv(), vals as Array<Any>)
         } else if ((nodeMap shr bit) and 1u == 1u) {
             // There exists child node that we have to insert into
-            val index = this.values.size.toUInt() - 1u - index(this.nodeMap, pos)
+            val index = this.values.lastIndex.toUInt() - index(this.nodeMap, pos)
             val vals = values.copyOf()
             vals[index.toInt()] = (values[index.toInt()] as Node<T>).insert(key, value, level + 1);
             return Node(nodeMap, dataMap, vals)
