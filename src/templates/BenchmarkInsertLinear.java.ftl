@@ -17,8 +17,9 @@ import java.util.Random;
 
 @State(Scope.Thread)
 public class BenchmarkInsertLinear${structure.name} {
-    @Param({"1", "10", "100", "1000", "10000", "100000", "1000000"})
-    int size;
+    @Param({"1", "2", "4", "8", "16", "32", "64", "128", "256", "512", "1024", "2048", "4096", "8192", "16384", "32768",
+    "65536", "131072", "262144", "524288", "1048576", "2097152", "4194304", "8388608", "16777316"})
+    int size = 0;
 
     ${structure.type} map;
 

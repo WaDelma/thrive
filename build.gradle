@@ -25,12 +25,29 @@ repositories {
     mavenCentral()
 }
 
+sourceSets {
+    mem {
+        java {
+            compileClasspath += main.output
+            runtimeClasspath += main.output
+            srcDir file('src/mem/java')
+        }
+    }
+}
+
+configurations {
+    memCompile.extendsFrom compile
+    memRuntime.extendsFrom runtime
+}
+
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     testCompile("junit:junit:4.12")
     testCompile("org.jetbrains.kotlin:kotlin-test-junit:1.3.41")
-    compile("org.freemarker:freemarker:2.3.23")
-    compile("commons-io:commons-io:2.4")
+    implementation("org.freemarker:freemarker:2.3.23")
+    implementation("commons-io:commons-io:2.4")
+    memImplementation("org.organicdesign:Paguro-KF:3.5.6")
+    memImplementation("org.openjdk.jol:jol-core:0.9")
 }
 
 jmh {
@@ -40,6 +57,7 @@ jmh {
     warmupIterations = 10
     iterations = 20
     fork = 2
+    forceGC = true
     jvmArgs = ['-Xmx4G', '-Xms4G', '-XX:+UseG1GC']
     resultFormat = 'CSV'
     resultsFile = project.file("${project.buildDir}/reports/jmh/results.csv")
