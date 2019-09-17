@@ -48,6 +48,7 @@ dependencies {
     implementation("commons-io:commons-io:2.4")
     memImplementation("org.organicdesign:Paguro-KF:3.5.6")
     memImplementation("org.openjdk.jol:jol-core:0.9")
+    memImplementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 }
 
 jmh {

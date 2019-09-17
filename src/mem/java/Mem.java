@@ -9,7 +9,9 @@ import thrive.Trie2j;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.Callable;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class Mem {
@@ -19,6 +21,16 @@ public class Mem {
         Pair(F fst, S snd) {
             this.fst = fst;
             this.snd = snd;
+        }
+    }
+    private static class Triple<F, S, T> {
+        F fst;
+        S snd;
+        T thr;
+        Triple(F fst, S snd, T thr) {
+            this.fst = fst;
+            this.snd = snd;
+            this.thr = thr;
         }
     }
     private static class Holder<T> {
@@ -45,37 +57,66 @@ public class Mem {
         this.add(() -> unify(PersistentHashMap.<Integer, Integer>empty(), (m, k, v) -> m.val = m.val.assoc(k, v)));
         this.add(() -> unify(PersistentTreeMap.<Integer, Integer>empty(), (m, k, v) -> m.val = m.val.assoc(k, v)));
     }};
+
+    static <T> void check(
+            String name,
+            int sizes,
+            Function<Supplier<Pair<BiConsumer<Integer, Integer>, Supplier<Object>>>, T> init,
+            BiConsumer<T, Integer> add,
+            Function<T, Object> getMap,
+            Function<T, Object> finish
+    ) {
+        for (var m: structures) {
+            for (int i = 0; i < sizes; i++) {
+                var amount = 1 << i;
+                var map = init.apply(m);
+                for (int j = 0; j < amount; j++) {
+                    add.accept(map, j);
+                }
+                var layout = GraphLayout.parseInstance(finish.apply(map));
+                System.out.println(name + "\t" + getMap.apply(map).getClass().getSimpleName() + "\t" + amount +  "\t" + layout.totalSize());
+            }
+        }
+    }
     public static void main(String[] args) {
-        for (var m: structures) {
-            for (int i = 0; i < 23; i++) {
-                var amount = 1 << i;
-                var map = m.get();
-                for (int j = 0; j < amount; j++) {
-                    map.fst.accept(j, 0);
-                }
-                var layout = GraphLayout.parseInstance(map.snd.get());
-                try {
-                    layout.toImage(m.getClass().getSimpleName() + "_lin_" + i);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        Random rand = new Random(42);
-        for (var m: structures) {
-            for (int i = 0; i < 23; i++) {
-                var amount = 1 << i;
-                var map = m.get();
-                for (int j = 0; j < amount; j++) {
-                    map.fst.accept(rand.nextInt(), 0);
-                }
-                var layout = GraphLayout.parseInstance(map.snd.get());
-                try {
-                    layout.toImage(m.getClass().getSimpleName() + "_rand_" + i);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+        System.out.println("test name amount size");
+        check(
+                "lin",
+                23,
+                Supplier::get,
+                (p, i) -> p.fst.accept(i, 0),
+                (p) -> p.snd.get(),
+                (p) -> p.snd.get()
+        );
+        check(
+                "lincumu",
+                21,
+                (m) -> new Pair<>(m.get(), new ArrayList<>()),
+                (p, i) -> {
+                    p.fst.fst.accept(i, 0);
+                    p.snd.add(p.fst.snd.get());
+                },
+                (p) -> p.fst.snd.get(),
+                (p) -> p.snd
+        );
+        check(
+                "rand",
+                23,
+                (m) -> new Pair<>(m.get(), new Random(42)),
+                (p, i) -> p.fst.fst.accept(p.snd.nextInt(), 0),
+                (p) -> p.fst.snd.get(),
+                (p) -> p.fst.snd.get()
+        );
+        check(
+                "randcumu",
+                21,
+                (m) -> new Triple<>(m.get(), new Random(42), new ArrayList<>()),
+                (p, i) -> {
+                    p.fst.fst.accept(p.snd.nextInt(), 0);
+                    p.thr.add(p.fst.snd.get());
+                },
+                (p) -> p.fst.snd.get(),
+                (p) -> p.thr
+        );
     }
 }
