@@ -65,6 +65,12 @@ jmh {
 }
 
 tasks {
+    task memBenchmark(type: JavaExec) {
+        dependsOn memClasses
+        group = "mem"
+        classpath = sourceSets.mem.runtimeClasspath
+        main = "Mem"
+    }
     clean {
         doFirst {
             delete "$projectDir/src/jmh"
