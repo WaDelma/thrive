@@ -6,10 +6,8 @@ import thrive.Trie1j;
 import thrive.Trie2;
 import thrive.Trie2j;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.concurrent.Callable;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -79,7 +77,7 @@ public class Mem {
         }
     }
     public static void main(String[] args) {
-        System.out.println("test name amount size");
+        System.out.println("test\tname\tamount\tsize");
         check(
                 "lin",
                 23,
