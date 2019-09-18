@@ -16,14 +16,14 @@ class Trie1<T> : Trie<T> {
     }
 
     override fun insert(key: Int, value: T): Trie1<T> {
-        val pos = 1u shl mask(key.toUInt(), 0).toInt()
+        val pos = 1 shl mask(key, 0, BITS)
         return when (root) {
-            null -> Trie1(Node(0u, pos, arrayOf(key.toUInt(), value as Any)))
-            else -> Trie1(root.insert(key.toUInt(), value, 0))
+            null -> Trie1(Node(0, pos, arrayOf(key, value as Any)))
+            else -> Trie1(root.insert(key, value, 0))
         }
     }
 
-    override fun get(key: Int): T? = root?.get(key.toUInt(), 0)
+    override fun get(key: Int): T? = root?.get(key, 0)
 
     override fun debug() {
         when (root)  {
@@ -39,16 +39,16 @@ class Trie1<T> : Trie<T> {
             first = false
             while (true) {
                 val node = stack.pop()
-                val datum = Integer.bitCount(node.dataMap.toInt())
+                val datum = Integer.bitCount(node.dataMap)
                 if (index == 0) {
-                    val nodes = Integer.bitCount(node.nodeMap.toInt())
+                    val nodes = Integer.bitCount(node.nodeMap)
                     (0 until nodes).forEach {
                         stack.add(node.values[node.values.lastIndex - it] as Node<T>)
                     }
                 }
                 if (index < datum) {
                     stack.add(node)
-                    return ((node.values[2 * index] as UInt).toInt() to node.values[2 * index + 1] as T).also {
+                    return ((node.values[2 * index] as Int) to node.values[2 * index + 1] as T).also {
                         index += 1
                     }
                 } else {
@@ -59,13 +59,13 @@ class Trie1<T> : Trie<T> {
 
         override fun hasNext(): Boolean = when (stack.size) {
             0 -> false
-            1 -> first || index <  Integer.bitCount(stack.peek().dataMap.toInt())
+            1 -> first || index <  Integer.bitCount(stack.peek().dataMap)
             else -> true
         }
     }
 }
 
-internal class Node<T>(val nodeMap: UInt, val dataMap: UInt, val values: Array<Any>) {
+internal class Node<T>(val nodeMap: Int, val dataMap: Int, val values: Array<Any>) {
     fun debug(level: Int) {
         val pad = generateSequence { " " }.take(level).joinToString("")
         println("${pad}Node(nodeMap=${nodeMap.toString(2)}, dataMap=${dataMap.toString(2)}")
@@ -91,13 +91,13 @@ internal class Node<T>(val nodeMap: UInt, val dataMap: UInt, val values: Array<A
         println("$pad)")
     }
 
-    fun insert(key: UInt, value: T, level: Int): Node<T> {
-        val bit = mask(key, BITS * level).toInt()
-        val pos = 1u shl bit
-        if ((dataMap shr bit) and 1u == 1u) {
+    fun insert(key: Int, value: T, level: Int): Node<T> {
+        val bit = mask(key, BITS * level, BITS)
+        val pos = 1 shl bit
+        if ((dataMap shr bit) and 1 == 1) {
             // There exists key-value pair in the place we would go in the internal storage
-            val index = (2u * index(this.dataMap, pos)).toInt()
-            if (key == values[index] as UInt) {
+            val index = (2 * index(this.dataMap, pos))
+            if (key == values[index]) {
                 // They had the same key, so we are going to replace the value
                 val vals = values.copyOf()
                 vals[index + 1] = value as Any;
@@ -108,29 +108,29 @@ internal class Node<T>(val nodeMap: UInt, val dataMap: UInt, val values: Array<A
             val vals = arrayOfNulls<Any>(values.size - 1)
             // Copy datum without key-value pair
             values.copyInto(vals, 0, 0, index)
-            val datum = Integer.bitCount(dataMap.toInt())
+            val datum = Integer.bitCount(dataMap)
             values.copyInto(vals, index, index + 2, datum * 2)
             // Copy children nodes
-            val nodeIndex = this.values.size.toUInt() - 1u - index(this.nodeMap or pos, pos)
-            values.copyInto(vals, nodeIndex.toInt(), nodeIndex.toInt() + 1, values.size)
-            val nodes = Integer.bitCount(nodeMap.toInt())
-            values.copyInto(vals, vals.size - nodes - 1, values.size - nodes, nodeIndex.toInt() + 1)
+            val nodeIndex = this.values.size - 1 - index(this.nodeMap or pos, pos)
+            values.copyInto(vals, nodeIndex, nodeIndex + 1, values.size)
+            val nodes = Integer.bitCount(nodeMap)
+            values.copyInto(vals, vals.size - nodes - 1, values.size - nodes, nodeIndex + 1)
             // Add node that contains both key-value pairs
-            vals[nodeIndex.toInt() - 1] = Node<T>(
-                0u,
-                1u shl mask(values[index] as UInt, BITS * (level + 1)).toInt(),
+            vals[nodeIndex - 1] = Node<T>(
+                0,
+                1 shl mask(values[index] as Int, BITS * (level + 1), BITS),
                 arrayOf(values[index], values[index + 1])
             ).insert(key, value, level + 1) as Any
             return Node(nodeMap or pos, dataMap and pos.inv(), vals as Array<Any>)
-        } else if ((nodeMap shr bit) and 1u == 1u) {
+        } else if ((nodeMap shr bit) and 1 == 1) {
             // There exists child node that we have to insert into
-            val index = this.values.lastIndex.toUInt() - index(this.nodeMap, pos)
+            val index = this.values.lastIndex - index(this.nodeMap, pos)
             val vals = values.copyOf()
-            vals[index.toInt()] = (values[index.toInt()] as Node<T>).insert(key, value, level + 1);
+            vals[index] = (values[index] as Node<T>).insert(key, value, level + 1);
             return Node(nodeMap, dataMap, vals)
         }
         // Now we can just save us into the internal storage
-        val index = (2u * index(this.dataMap, pos)).toInt()
+        val index = 2 * index(this.dataMap, pos)
         // Our key-value will take two more slots
         val vals = arrayOfNulls<Any>(values.size + 2)
         // Copy slots before us
@@ -143,22 +143,19 @@ internal class Node<T>(val nodeMap: UInt, val dataMap: UInt, val values: Array<A
         return Node(nodeMap, dataMap or pos, vals as Array<Any>)
     }
 
-    fun get(key: UInt, level: Int): T? {
-        val bit = mask(key, BITS * level).toInt()
-        val pos = 1u shl bit
-        if ((dataMap shr bit) and 1u == 1u) {
-            val index = (2u * index(this.dataMap, pos)).toInt()
-            if (key == values[index] as UInt) {
+    fun get(key: Int, level: Int): T? {
+        val bit = mask(key, BITS * level, BITS)
+        val pos = 1 shl bit
+        if ((dataMap shr bit) and 1 == 1) {
+            val index = 2 * index(this.dataMap, pos)
+            if (key == values[index]) {
                 return values[index + 1] as T
             }
             return null
-        } else if ((nodeMap shr bit) and 1u == 1u) {
-            val index = this.values.size.toUInt() - 1u - index(this.nodeMap, pos)
-            return (values[index.toInt()] as Node<T>).get(key, level + 1)
+        } else if ((nodeMap shr bit) and 1 == 1) {
+            val index = this.values.size - 1 - index(this.nodeMap, pos)
+            return (values[index] as Node<T>).get(key, level + 1)
         }
         return null
     }
 }
-
-private fun mask(index: UInt, shift: Int): UInt = (index shr shift) and ((1u shl BITS) - 1u)
-private fun index(bitmap: UInt, pos: UInt): UInt = Integer.bitCount((bitmap and (pos - 1u)).toInt()).toUInt()

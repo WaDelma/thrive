@@ -130,6 +130,22 @@ tasks {
                                 iterator: 'entries'
                             },
                             {
+                                type: 'Trie3<Integer>'
+                                creator: 'new Trie3<Integer>()'
+                                path: 'thrive.Trie3'
+                                insert: 'insert'
+                                name: 'Trie3'
+                                iterator: 'entries'
+                            },
+                            {
+                                type: 'Trie3j<Integer>'
+                                creator: 'new Trie3j<Integer>()'
+                                path: 'thrive.Trie3j'
+                                insert: 'insert'
+                                name: 'Trie3j'
+                                iterator: 'entries'
+                            },
+                            {
                                 type: 'PersistentHashMap<Integer, Integer>'
                                 creator: 'PersistentHashMap.empty()'
                                 path: 'org.organicdesign.fp.collections.PersistentHashMap'

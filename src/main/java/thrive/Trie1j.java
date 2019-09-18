@@ -8,6 +8,9 @@ import java.util.Iterator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static thrive.TrieUtils.mask;
+import static thrive.TrieUtils.index;
+
 
 public final class Trie1j<T> implements Trie<T> {
     private static final int BITS = 5;
@@ -25,7 +28,7 @@ public final class Trie1j<T> implements Trie<T> {
     @NotNull
     @Override
     public Trie1j<T> insert(int key, T value) {
-        var pos = 1 << mask(key, 0);
+        var pos = 1 << mask(key, 0, BITS);
         if (root == null) {
             return new Trie1j<>(new Node<>(0, pos, new Object[]{key, value}));
         }
@@ -99,14 +102,6 @@ public final class Trie1j<T> implements Trie<T> {
         }
     }
 
-    private static int mask(int index, int shift) {
-        return (index >>> shift) & ((1 << BITS) - 1);
-    }
-
-    private static int index(int bitmap, int pos) {
-        return Integer.bitCount(bitmap & (pos - 1));
-    }
-
     private static void copyInto(Object[] array, Object[] destination, int destinationOffset, int startIndex, int endIndex) {
         System.arraycopy(array, startIndex, destination, destinationOffset, endIndex - startIndex);
     }
@@ -149,7 +144,7 @@ public final class Trie1j<T> implements Trie<T> {
 
         @SuppressWarnings("unchecked")
         private Node<T> insert(int key, T value, int level) {
-            var bit = mask(key, BITS * level);
+            var bit = mask(key, BITS * level, BITS);
             var pos = 1 << bit;
             if (((dataMap >>> bit) & 1) == 1) {
                 // There exists key-value pair in the place we would go in the internal storage
@@ -176,7 +171,7 @@ public final class Trie1j<T> implements Trie<T> {
                 // Add node that contains both key-value pairs
                 vals[nodeIndex - 1] = new Node<T>(
                         0,
-                        1 << mask((int) values[index], BITS * (level + 1)),
+                        1 << mask((int) values[index], BITS * (level + 1), BITS),
                         new Object[] {values[index], values[index + 1]}
                 ).insert(key, value, level + 1);
                 return new Node<>(nodeMap | pos, dataMap & ~pos, vals);
@@ -203,7 +198,7 @@ public final class Trie1j<T> implements Trie<T> {
 
         @SuppressWarnings("unchecked")
         private T get(int key, int level) {
-            var bit = mask(key, BITS * level);
+            var bit = mask(key, BITS * level, BITS);
             var pos = 1 << bit;
             if (((dataMap >>> bit) & 1) == 1) {
                 var index = 2 * index(this.dataMap, pos);

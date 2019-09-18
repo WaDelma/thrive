@@ -1,10 +1,7 @@
 import org.openjdk.jol.info.GraphLayout;
 import org.organicdesign.fp.collections.PersistentHashMap;
 import org.organicdesign.fp.collections.PersistentTreeMap;
-import thrive.Trie1;
-import thrive.Trie1j;
-import thrive.Trie2;
-import thrive.Trie2j;
+import thrive.*;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -47,11 +44,15 @@ public class Mem {
         var h = new Holder<>(m);
         return new Pair<>((k, v) -> t.consume(h, k, v), h::getVal);
     }
+    private static Pair<BiConsumer<Integer, Integer>, Supplier<Object>> fromTrie(Trie trie) {
+        return unify(trie, (m, k, v) -> m.val = m.val.insert(k, v));
+    }
     private static final ArrayList<Supplier<Pair<BiConsumer<Integer, Integer>, Supplier<Object>>>> structures = new ArrayList<>() {{
-        this.add(() -> unify(new Trie1<>(), (m, k, v) -> m.val = m.val.insert(k, v)));
-        this.add(() -> unify(new Trie1j<>(), (m, k, v) -> m.val = m.val.insert(k, v)));
-        this.add(() -> unify(new Trie2<>(), (m, k, v) -> m.val = m.val.insert(k, v)));
-        this.add(() -> unify(new Trie2j<>(), (m, k, v) -> m.val = m.val.insert(k, v)));
+        this.add(() -> fromTrie(new Trie1<>()));
+        this.add(() -> fromTrie(new Trie1j<>()));
+        this.add(() -> fromTrie(new Trie2<>()));
+        this.add(() -> fromTrie(new Trie2j<>()));
+        this.add(() -> fromTrie(new Trie3<>()));
         this.add(() -> unify(PersistentHashMap.<Integer, Integer>empty(), (m, k, v) -> m.val = m.val.assoc(k, v)));
         this.add(() -> unify(PersistentTreeMap.<Integer, Integer>empty(), (m, k, v) -> m.val = m.val.assoc(k, v)));
     }};
@@ -88,14 +89,14 @@ public class Mem {
         );
         check(
                 "lincumu",
-                21,
+                23,
                 (m) -> new Pair<>(m.get(), new ArrayList<>()),
                 (p, i) -> {
                     p.fst.fst.accept(i, 0);
                     p.snd.add(p.fst.snd.get());
                 },
                 (p) -> p.fst.snd.get(),
-                (p) -> p.snd
+                (p) -> p.snd.toArray()
         );
         check(
                 "rand",
@@ -107,14 +108,14 @@ public class Mem {
         );
         check(
                 "randcumu",
-                21,
+                23,
                 (m) -> new Triple<>(m.get(), new Random(42), new ArrayList<>()),
                 (p, i) -> {
                     p.fst.fst.accept(p.snd.nextInt(), 0);
                     p.thr.add(p.fst.snd.get());
                 },
                 (p) -> p.fst.snd.get(),
-                (p) -> p.thr
+                (p) -> p.thr.toArray()
         );
     }
 }

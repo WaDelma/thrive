@@ -7,6 +7,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static thrive.TrieUtils.index;
+import static thrive.TrieUtils.mask;
+
 public final class Trie2j<T> implements Trie<T> {
     private static final int BITS = 5;
 
@@ -23,7 +26,7 @@ public final class Trie2j<T> implements Trie<T> {
     @NotNull
     @Override
     public Trie2j<T> insert(int key, T value) {
-        var pos = 1 << mask(key, 0);
+        var pos = 1 << mask(key, 0, BITS);
         if (root != null) {
             return new Trie2j<>(root.insert(key, value, 0));
         } else {
@@ -67,6 +70,7 @@ public final class Trie2j<T> implements Trie<T> {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public Pair<Integer, T> next() {
             while (true) {
                 var node = stack.remove(stack.size() - 1);
@@ -99,14 +103,6 @@ public final class Trie2j<T> implements Trie<T> {
                 default: return true;
             }
         }
-    }
-
-    private static int mask(int index, int shift) {
-        return (index >>> shift) & ((1 << BITS) - 1);
-    }
-
-    private static int index(int bitmap, int pos) {
-        return Integer.bitCount(bitmap & (pos - 1));
     }
 
     private static void copyInto(Object src, Object dest, int destinationOffset, int startIndex, int endIndex) {
@@ -143,7 +139,7 @@ public final class Trie2j<T> implements Trie<T> {
         @Override
         @SuppressWarnings("unchecked")
         public Trunk<T> insert(int key, T value, int level) {
-            var bit = mask(key, BITS * level);
+            var bit = mask(key, BITS * level, BITS);
             var pos = 1 << bit;
             var index = index(this.map, pos);
             if (((map >>> bit) & 1) == 1) {
@@ -155,7 +151,7 @@ public final class Trie2j<T> implements Trie<T> {
             var childs = new Object[children.length + 1];
             copyInto(children, childs, 0, 0, index);
             copyInto(children, childs, index + 1, index, children.length);
-            var bit2 = mask(key, BITS * (level + 1));
+            var bit2 = mask(key, BITS * (level + 1), BITS);
             childs[index] = new Leaf<>(1 << bit2, new int[]{key}, new Object[]{value});
             return new Trunk<>(map | pos, childs);
         }
@@ -163,7 +159,7 @@ public final class Trie2j<T> implements Trie<T> {
         @Override
         @SuppressWarnings("unchecked")
         public T get(int key, int level) {
-            var bit = mask(key, BITS * level);
+            var bit = mask(key, BITS * level, BITS);
             var pos = 1 << bit;
             if (((map >>> bit) & 1) == 1) {
                 var index = index(this.map, pos);
@@ -196,7 +192,7 @@ public final class Trie2j<T> implements Trie<T> {
         @Override
         @SuppressWarnings("unchecked")
         public Node<T> insert(int key, T value, int level) {
-            var bit = mask(key, BITS * level);
+            var bit = mask(key, BITS * level, BITS);
             var pos = 1 << bit;
             var index = index(this.map, pos);
             if (((map >>> bit) & 1) == 1) {
@@ -210,7 +206,7 @@ public final class Trie2j<T> implements Trie<T> {
 
                 var children = new Object[keys.length];
                 for (int i = 0; i < children.length; i++) {
-                    var bit2 = mask(keys[i], BITS * (level + 1));
+                    var bit2 = mask(keys[i], BITS * (level + 1), BITS);
                     children[i] = new Leaf<>(1 << bit2, new int[]{keys[i]}, new Object[]{values[i]});
                 }
                 children[index] = ((Node<T>) children[index]).insert(key, value, level + 1);
@@ -234,7 +230,7 @@ public final class Trie2j<T> implements Trie<T> {
         @Override
         @SuppressWarnings("unchecked")
         public T get(int key, int level) {
-            var bit = mask(key, BITS * level);
+            var bit = mask(key, BITS * level, BITS);
             var pos = 1 << bit;
             if (((map >>> bit) & 1) == 1) {
                 var index = index(this.map, pos);
