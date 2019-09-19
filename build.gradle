@@ -56,9 +56,12 @@ jmh {
         implementation("org.organicdesign:Paguro-KF:3.5.6")
     }
     warmupIterations = 10
+    warmup = '1s'
     iterations = 20
-    fork = 2
+    timeOnIteration = '1s'
+    fork = 5
     forceGC = true
+    benchmarkMode = ['thrpt']
     jvmArgs = ['-Xmx4G', '-Xms4G', '-XX:+UseG1GC']
     resultFormat = 'CSV'
     resultsFile = project.file("${project.buildDir}/reports/jmh/results.csv")
@@ -83,7 +86,7 @@ tasks {
         kotlinOptions.jvmTarget = "1.8"
     }
     task fmpp {
-        group = "other"
+        group = "fmpp"
         def fromDir = "$projectDir/src/templates"
         def intoDir = "$projectDir/src/jmh/java/thrive"
         doLast {

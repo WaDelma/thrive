@@ -15,6 +15,7 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 
 import java.util.HashSet;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @State(Scope.Thread)
 public class BenchmarkGetLinear${structure.name} {
@@ -36,11 +37,10 @@ public class BenchmarkGetLinear${structure.name} {
     public static class GetState {
         public int[] is = new int[100];
 
+        private static final AtomicInteger i = new AtomicInteger(0);
         @Setup
         public void setup() {
-            Random rand = new Random(Thread.currentThread().getId());
-            rand.nextInt();
-            rand.nextInt();
+            Random rand = new Random(37 * i.addAndGet(3));
             for (int n = 0; n < is.length; n++) {
                 is[n] = rand.nextInt(size);
             }
@@ -48,7 +48,6 @@ public class BenchmarkGetLinear${structure.name} {
     }
 
     @Benchmark
-    @Fork(3)
     public void hittingGetLinear${structure.name}(GetState state, Blackhole bh) {
         for (int i: state.is) {
             bh.consume(map.get(i));
@@ -58,7 +57,6 @@ public class BenchmarkGetLinear${structure.name} {
     public static void main(String[] args) throws RunnerException {
         Options opt = new OptionsBuilder()
                 .include(BenchmarkGetLinear${structure.name}.class.getSimpleName())
-                .forks(1)
                 .build();
         new Runner(opt).run();
     }

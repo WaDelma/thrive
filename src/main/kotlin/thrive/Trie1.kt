@@ -2,6 +2,7 @@ package thrive
 
 import java.util.ArrayList
 
+// TODO: Benchmark the effects of changing this
 private const val BITS: Int = 5
 
 class Trie1<T> : Trie<T> {

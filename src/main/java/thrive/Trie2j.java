@@ -7,8 +7,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static thrive.TrieUtils.index;
-import static thrive.TrieUtils.mask;
+import static thrive.TrieUtils.*;
 
 public final class Trie2j<T> implements Trie<T> {
     private static final int BITS = 5;
@@ -103,10 +102,6 @@ public final class Trie2j<T> implements Trie<T> {
                 default: return true;
             }
         }
-    }
-
-    private static void copyInto(Object src, Object dest, int destinationOffset, int startIndex, int endIndex) {
-        System.arraycopy(src, startIndex, dest, destinationOffset, endIndex - startIndex);
     }
 
     private interface Node<T> {

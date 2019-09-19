@@ -15,7 +15,7 @@ class Trie3<T> : Trie<T> {
         this.root = node
     }
 
-    override fun insert(key: Int, value: T): Trie<T> {
+    override fun insert(key: Int, value: T): Trie3<T> {
         return when (root) {
             null -> Trie3(Trunk3<T>(0, arrayOf()).insert(key, value, 0))
             else -> Trie3(root.insert(key, value, 0))

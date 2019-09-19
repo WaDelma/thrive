@@ -15,6 +15,7 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 
 import java.util.HashSet;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @State(Scope.Thread)
 public class BenchmarkGet${structure.name} {
@@ -47,17 +48,15 @@ public class BenchmarkGet${structure.name} {
         }
     }
 
-
     @State(Scope.Thread)
     public static class GetState {
         public int[] is = new int[100];
         public int[] nis = new int[100];
 
+        private static final AtomicInteger i = new AtomicInteger(0);
         @Setup
         public void setup() {
-            Random rand = new Random(Thread.currentThread().getId());
-            rand.nextInt();
-            rand.nextInt();
+            Random rand = new Random(37 * i.addAndGet(3));
             for (int n = 0; n < is.length; n++) {
                 is[n] = xs[rand.nextInt(size)];
             }
@@ -74,7 +73,6 @@ public class BenchmarkGet${structure.name} {
     }
 
     @Benchmark
-    @Fork(3)
     public void hittingGet${structure.name}(GetState state, Blackhole bh) {
         for (int i: state.is) {
             bh.consume(map.get(i));
@@ -82,7 +80,6 @@ public class BenchmarkGet${structure.name} {
     }
 
     @Benchmark
-    @Fork(3)
     public void missingGet${structure.name}(GetState state, Blackhole bh) {
         for (int i: state.nis) {
             bh.consume(map.get(i));
@@ -92,7 +89,6 @@ public class BenchmarkGet${structure.name} {
     public static void main(String[] args) throws RunnerException {
         Options opt = new OptionsBuilder()
                 .include(BenchmarkGet${structure.name}.class.getSimpleName())
-                .forks(1)
                 .build();
         new Runner(opt).run();
     }

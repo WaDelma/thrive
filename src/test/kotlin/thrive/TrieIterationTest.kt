@@ -47,7 +47,6 @@ class TrieIterationTest(val trie: () -> Trie<String>, val desc: String) {
         (0..31).forEach {
             map = map.insert(it, "v$it")
         }
-        map.debug()
         val set = mutableSetOf<Int>()
         map.entries().forEachRemaining { (n, s) ->
             set.add(n)

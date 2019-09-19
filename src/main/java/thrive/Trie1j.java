@@ -8,8 +8,7 @@ import java.util.Iterator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static thrive.TrieUtils.mask;
-import static thrive.TrieUtils.index;
+import static thrive.TrieUtils.*;
 
 
 public final class Trie1j<T> implements Trie<T> {
@@ -70,6 +69,7 @@ public final class Trie1j<T> implements Trie<T> {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public Pair<Integer, T> next() {
             first = false;
             while (true) {
@@ -100,10 +100,6 @@ public final class Trie1j<T> implements Trie<T> {
                 default: return true;
             }
         }
-    }
-
-    private static void copyInto(Object[] array, Object[] destination, int destinationOffset, int startIndex, int endIndex) {
-        System.arraycopy(array, startIndex, destination, destinationOffset, endIndex - startIndex);
     }
 
     private static class Node<T> {

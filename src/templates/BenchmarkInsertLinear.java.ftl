@@ -30,16 +30,16 @@ public class BenchmarkInsertLinear${structure.name} {
 
     @Benchmark
     public ${structure.type} insertLinear${structure.name}() {
+        var m = map;
         for (int i = 0; i < size; i++) {
-            map = map.${structure.insert}(i, i);
+            m = m.${structure.insert}(i, i);
         }
-        return map;
+        return m;
     }
 
     public static void main(String[] args) throws RunnerException {
         Options opt = new OptionsBuilder()
             .include(BenchmarkInsertLinear${structure.name}.class.getSimpleName())
-            .forks(1)
             .build();
         new Runner(opt).run();
     }
