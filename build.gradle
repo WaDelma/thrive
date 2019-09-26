@@ -163,6 +163,14 @@ tasks {
                                 insert: 'assoc'
                                 name: 'PersistentTreeMap'
                                 iterator: 'iterator'
+                            },
+                            {
+                                type: 'ArrayMap<Integer>'
+                                creator: 'new ArrayMap<Integer>()'
+                                path: 'thrive.ArrayMap'
+                                insert: 'insert'
+                                name: 'ArrayMap'
+                                iterator: 'entries'
                             }
                         ]
                     """

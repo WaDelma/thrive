@@ -40,21 +40,34 @@ public class Mem {
     interface TriConsumer<T, S, V> {
         void consume(T t, S s, V v);
     }
-    private static <M> Pair<BiConsumer<Integer, Integer>, Supplier<Object>> unify(M m, TriConsumer<Holder<M>, Integer, Integer> t) {
+    private static <M> Pair<BiConsumer<Integer, Integer>, Supplier<Object>> unify(
+        M m,
+        TriConsumer<Holder<M>, Integer, Integer> t,
+        Function<Holder<M>, M> get
+    ) {
         var h = new Holder<>(m);
-        return new Pair<>((k, v) -> t.consume(h, k, v), h::getVal);
+        return new Pair<>((k, v) -> t.consume(h, k, v), () -> get.apply(h));
     }
     private static Pair<BiConsumer<Integer, Integer>, Supplier<Object>> fromTrie(Trie trie) {
-        return unify(trie, (m, k, v) -> m.val = m.val.insert(k, v));
+        return unify(trie, (m, k, v) -> m.val = m.val.insert(k, v), Holder::getVal);
     }
+    @SuppressWarnings("unchecked")
     private static final ArrayList<Supplier<Pair<BiConsumer<Integer, Integer>, Supplier<Object>>>> structures = new ArrayList<>() {{
         this.add(() -> fromTrie(new Trie1<>()));
         this.add(() -> fromTrie(new Trie1j<>()));
         this.add(() -> fromTrie(new Trie2<>()));
         this.add(() -> fromTrie(new Trie2j<>()));
         this.add(() -> fromTrie(new Trie3<>()));
-        this.add(() -> unify(PersistentHashMap.<Integer, Integer>empty(), (m, k, v) -> m.val = m.val.assoc(k, v)));
-        this.add(() -> unify(PersistentTreeMap.<Integer, Integer>empty(), (m, k, v) -> m.val = m.val.assoc(k, v)));
+        this.add(() -> fromTrie(new Trie3j<>()));
+        this.add(() -> unify(PersistentHashMap.<Integer, Integer>empty(), (m, k, v) -> m.val = m.val.assoc(k, v), Holder::getVal));
+        this.add(() -> unify(PersistentTreeMap.<Integer, Integer>empty(), (m, k, v) -> m.val = m.val.assoc(k, v), Holder::getVal));
+        this.add(() -> unify(new ArrayMap<>(), (m, k, v) -> { m.val.insert(k, v); }, (h) -> {
+            try {
+                return (ArrayMap<Object>) h.getVal().clone();
+            } catch (CloneNotSupportedException e) {
+                throw new RuntimeException();
+            }
+        }));
     }};
 
     static <T> void check(

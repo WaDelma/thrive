@@ -1,7 +1,7 @@
 <@pp.dropOutputFile />
 
 <#list STRUCTURES as structure>
-<@pp.nestOutputFile name = "BenchmarkIteratorLinear${structure.name}.java">
+<@pp.nestOutputFile name = "BenchmarkLinearIterator${structure.name}.java">
 
 package thrive;
 
@@ -18,7 +18,7 @@ import java.util.Random;
 import java.util.Iterator;
 
 @State(Scope.Thread)
-public class BenchmarkIteratorLinear${structure.name} {
+public class BenchmarkLinearIterator${structure.name} {
     @Param({"1", "2", "4", "8", "16", "32", "64", "128", "256", "512", "1024", "2048", "4096", "8192", "16384", "32768",
     "65536", "131072", "262144", "524288", "1048576", "2097152", "4194304", "8388608", "16777316"})
     static int size = 0;
@@ -43,7 +43,7 @@ public class BenchmarkIteratorLinear${structure.name} {
 
     public static void main(String[] args) throws RunnerException {
         Options opt = new OptionsBuilder()
-                .include(BenchmarkIteratorLinear${structure.name}.class.getSimpleName())
+                .include(BenchmarkLinearIterator${structure.name}.class.getSimpleName())
                 .build();
         new Runner(opt).run();
     }

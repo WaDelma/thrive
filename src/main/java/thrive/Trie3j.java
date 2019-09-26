@@ -6,14 +6,13 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.BaseStream;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static thrive.TrieUtils.*;
 
-class Trie3j<T> implements Trie<T> {
+public class Trie3j<T> implements Trie<T> {
     private static final int BITS = 5;
 
     private Node3j<T> root;
