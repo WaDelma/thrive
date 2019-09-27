@@ -29,7 +29,7 @@ public class BenchmarkLinearGet${structure.name} {
     public void setup() {
         map = ${structure.creator};
         for (int c = 0; c < size; c++) {
-            map = map.${structure.insert}(c, c);
+            map = map.${structure.insert}(c, (Integer)c);
         }
     }
 
@@ -42,7 +42,7 @@ public class BenchmarkLinearGet${structure.name} {
         public void setup() {
             Random rand = new Random(37 * i.addAndGet(3));
             for (int n = 0; n < is.length; n++) {
-                is[n] = rand.nextInt(size);
+                is[n] = rand.nextInt(Integer.MAX_VALUE);
             }
         }
     }
@@ -50,7 +50,7 @@ public class BenchmarkLinearGet${structure.name} {
     @Benchmark
     public void hittingGetLinear${structure.name}(GetState state, Blackhole bh) {
         for (int i: state.is) {
-            bh.consume(map.get(i));
+            bh.consume(map.${structure.get}(i));
         }
     }
 

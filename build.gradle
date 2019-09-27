@@ -53,6 +53,8 @@ dependencies {
 
 jmh {
     dependencies {
+        implementation("org.clojure:clojure:1.10.1")
+        implementation("org.scala-lang:scala-library:2.11.12")
         implementation("org.organicdesign:Paguro-KF:3.5.6")
     }
     warmupIterations = 10
@@ -107,6 +109,8 @@ tasks {
                                 insert: 'insert'
                                 name: 'Trie1'
                                 iterator: 'entries'
+                                get: 'get'
+                                random: true
                             },
                             {
                                 type: 'Trie1j<Integer>'
@@ -115,6 +119,8 @@ tasks {
                                 insert: 'insert'
                                 name: 'Trie1j'
                                 iterator: 'entries'
+                                get: 'get'
+                                random: true
                             },
                             {
                                 type: 'Trie2<Integer>'
@@ -123,6 +129,8 @@ tasks {
                                 insert: 'insert'
                                 name: 'Trie2'
                                 iterator: 'entries'
+                                get: 'get'
+                                random: true
                             },
                             {
                                 type: 'Trie2j<Integer>'
@@ -131,6 +139,8 @@ tasks {
                                 insert: 'insert'
                                 name: 'Trie2j'
                                 iterator: 'entries'
+                                get: 'get'
+                                random: true
                             },
                             {
                                 type: 'Trie3<Integer>'
@@ -139,6 +149,8 @@ tasks {
                                 insert: 'insert'
                                 name: 'Trie3'
                                 iterator: 'entries'
+                                get: 'get'
+                                random: true
                             },
                             {
                                 type: 'Trie3j<Integer>'
@@ -147,6 +159,8 @@ tasks {
                                 insert: 'insert'
                                 name: 'Trie3j'
                                 iterator: 'entries'
+                                get: 'get'
+                                random: true
                             },
                             {
                                 type: 'PersistentHashMap<Integer, Integer>'
@@ -155,6 +169,8 @@ tasks {
                                 insert: 'assoc'
                                 name: 'PersistentHashMap'
                                 iterator: 'iterator'
+                                get: 'get'
+                                random: true
                             },
                             {
                                 type: 'PersistentTreeMap<Integer, Integer>'
@@ -163,6 +179,8 @@ tasks {
                                 insert: 'assoc'
                                 name: 'PersistentTreeMap'
                                 iterator: 'iterator'
+                                get: 'get'
+                                random: true
                             },
                             {
                                 type: 'ArrayMap<Integer>'
@@ -171,6 +189,38 @@ tasks {
                                 insert: 'insert'
                                 name: 'ArrayMap'
                                 iterator: 'entries'
+                                get: 'get'
+                                random: false
+                            },
+                            {
+                                type: 'IntMap<Integer>',
+                                creator: 'IntMap\$.MODULE\$.empty()'
+                                path: 'scala.collection.immutable.*'
+                                insert: 'updated'
+                                name: 'ScalaIntMap'
+                                iterator: 'iterator'
+                                get: 'get'
+                                random: true
+                            },
+                            {
+                                type: 'IPersistentMap'
+                                creator: 'PersistentHashMap.EMPTY'
+                                path: 'clojure.lang.*'
+                                insert: 'assoc'
+                                name: 'ClojurePersistentHashMap'
+                                iterator: 'iterator'
+                                get: 'valAt'
+                                random: true
+                            },
+                            {
+                                type: 'IPersistentMap'
+                                creator: 'PersistentTreeMap.EMPTY'
+                                path: 'clojure.lang.*'
+                                insert: 'assoc'
+                                name: 'ClojurePersistentTreeMap'
+                                iterator: 'iterator'
+                                get: 'valAt'
+                                random: true
                             }
                         ]
                     """

@@ -29,13 +29,13 @@ public class BenchmarkLinearIterator${structure.name} {
     public void setup() {
         map = ${structure.creator};
         for (int c = 0; c < size; c++) {
-            map = map.${structure.insert}(c, c);
+            map = map.${structure.insert}(c, (Integer)c);
         }
     }
 
     @Benchmark
     public void iterateLinear${structure.name}(Blackhole bh) {
-        Iterator iter = map.${structure.iterator}();
+        var iter = map.${structure.iterator}();
         while (iter.hasNext()) {
             bh.consume(iter.next());
         }

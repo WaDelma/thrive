@@ -1,6 +1,7 @@
 <@pp.dropOutputFile />
 
 <#list STRUCTURES as structure>
+<#if structure.random>
 <@pp.nestOutputFile name = "BenchmarkIterator${structure.name}.java">
 
 package thrive;
@@ -37,11 +38,11 @@ public class BenchmarkIterator${structure.name} {
         set = new HashSet<>(size);
         for (int c = 0; c < size; c++) {
             while (true) {
-                xs[c] = rand.nextInt();
+                xs[c] = rand.nextInt(Integer.MAX_VALUE);
                 if (set.contains(xs[c])) {
                     continue;
                 }
-                map = map.${structure.insert}(xs[c], xs[c]);
+                map = map.${structure.insert}(xs[c], (Integer)xs[c]);
                 break;
             }
         }
@@ -49,7 +50,7 @@ public class BenchmarkIterator${structure.name} {
 
     @Benchmark
     public void iterate${structure.name}(Blackhole bh) {
-        Iterator iter = map.${structure.iterator}();
+        var iter = map.${structure.iterator}();
         while (iter.hasNext()) {
             bh.consume(iter.next());
         }
@@ -63,4 +64,5 @@ public class BenchmarkIterator${structure.name} {
     }
 }
 </@pp.nestOutputFile>
+</#if>
 </#list>

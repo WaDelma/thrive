@@ -32,7 +32,7 @@ public class BenchmarkLinearInsert${structure.name} {
     public ${structure.type} insertLinear${structure.name}() {
         var m = map;
         for (int i = 0; i < size; i++) {
-            m = m.${structure.insert}(i, i);
+            m = m.${structure.insert}(i, (Integer)i);
         }
         return m;
     }

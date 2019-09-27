@@ -1,6 +1,7 @@
 <@pp.dropOutputFile />
 
 <#list STRUCTURES as structure>
+<#if structure.random>
 <@pp.nestOutputFile name = "BenchmarkGet${structure.name}.java">
 
 package thrive;
@@ -37,12 +38,12 @@ public class BenchmarkGet${structure.name} {
         set = new HashSet<>(size);
         for (int c = 0; c < size; c++) {
             while (true) {
-                xs[c] = rand.nextInt();
+                xs[c] = rand.nextInt(Integer.MAX_VALUE);
                 if (set.contains(xs[c])) {
                     continue;
                 }
                 set.add(xs[c]);
-                map = map.${structure.insert}(xs[c], xs[c]);
+                map = map.${structure.insert}(xs[c], (Integer)xs[c]);
                 break;
             }
         }
@@ -62,7 +63,7 @@ public class BenchmarkGet${structure.name} {
             }
             for (int n = 0; n < nis.length; n++) {
                 while (true) {
-                    nis[n] = rand.nextInt();
+                    nis[n] = rand.nextInt(Integer.MAX_VALUE);
                     if (set.contains(nis[n])) {
                         continue;
                     }
@@ -75,14 +76,14 @@ public class BenchmarkGet${structure.name} {
     @Benchmark
     public void hittingGet${structure.name}(GetState state, Blackhole bh) {
         for (int i: state.is) {
-            bh.consume(map.get(i));
+            bh.consume(map.${structure.get}(i));
         }
     }
 
     @Benchmark
     public void missingGet${structure.name}(GetState state, Blackhole bh) {
         for (int i: state.nis) {
-            bh.consume(map.get(i));
+            bh.consume(map.${structure.get}(i));
         }
     }
 
@@ -94,4 +95,5 @@ public class BenchmarkGet${structure.name} {
     }
 }
 </@pp.nestOutputFile>
+</#if>
 </#list>

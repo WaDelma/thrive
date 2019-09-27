@@ -1,6 +1,7 @@
 <@pp.dropOutputFile />
 
 <#list STRUCTURES as structure>
+<#if structure.random>
 <@pp.nestOutputFile name = "BenchmarkInsert${structure.name}.java">
 
 package thrive;
@@ -33,7 +34,7 @@ public class BenchmarkInsert${structure.name} {
         HashSet< Integer> set = new HashSet< Integer>(size);
         for (int c = 0; c < size; c++) {
             while (true) {
-                xs[c] = rand.nextInt();
+                xs[c] = rand.nextInt(Integer.MAX_VALUE);
                 if (set.contains(xs[c])) {
                     continue;
                 }
@@ -47,7 +48,7 @@ public class BenchmarkInsert${structure.name} {
     public ${structure.type} insert${structure.name}() {
         var m = map;
         for (int i: xs) {
-            m = m.${structure.insert}(i, i);
+            m = m.${structure.insert}(i, (Integer)i);
         }
         return m;
     }
@@ -60,4 +61,5 @@ public class BenchmarkInsert${structure.name} {
     }
 }
 </@pp.nestOutputFile>
+</#if>
 </#list>
