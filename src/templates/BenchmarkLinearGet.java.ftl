@@ -1,7 +1,7 @@
 <@pp.dropOutputFile />
 
 <#list STRUCTURES as structure>
-<@pp.nestOutputFile name = "BenchmarkLinearGet${structure.name}.java">
+<@pp.nestOutputFile name = "BenchmarkLinearGet_${structure.name}.java">
 
 package thrive;
 
@@ -18,7 +18,7 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @State(Scope.Thread)
-public class BenchmarkLinearGet${structure.name} {
+public class BenchmarkLinearGet_${structure.name} {
     @Param({"1", "2", "4", "8", "16", "32", "64", "128", "256", "512", "1024", "2048", "4096", "8192", "16384", "32768",
     "65536", "131072", "262144", "524288", "1048576", "2097152", "4194304", "8388608", "16777316"})
     static int size = 0;
@@ -56,7 +56,7 @@ public class BenchmarkLinearGet${structure.name} {
 
     public static void main(String[] args) throws RunnerException {
         Options opt = new OptionsBuilder()
-                .include(BenchmarkLinearGet${structure.name}.class.getSimpleName())
+                .include(BenchmarkLinearGet_${structure.name}.class.getSimpleName())
                 .build();
         new Runner(opt).run();
     }

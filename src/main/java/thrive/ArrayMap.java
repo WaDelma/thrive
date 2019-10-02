@@ -26,6 +26,10 @@ public class ArrayMap<T> implements Cloneable {
         return this;
     }
 
+    public int size() {
+        return size;
+    }
+
     @SuppressWarnings("unchecked")
     public T get(int key) {
         if (key < array.length) {
@@ -60,11 +64,11 @@ public class ArrayMap<T> implements Cloneable {
         public Pair<Integer, T> next() {
             produced += 1;
             while (true) {
-                if (array[index] != null) {
-                    index += 1;
-                    return new Pair<>(index, (T)array[index]);
-                }
+                var i = index;
                 index += 1;
+                if (array[i] != null) {
+                    return new Pair<>(i, (T)array[i]);
+                }
             }
         }
     }

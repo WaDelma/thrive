@@ -193,6 +193,16 @@ tasks {
                                 random: false
                             },
                             {
+                                type: 'HashMap<Integer, Integer>',
+                                creator: 'HashMap\$.MODULE\$.empty()'
+                                path: 'scala.collection.immutable.*'
+                                insert: 'updated'
+                                name: 'ScalaHashMap'
+                                iterator: 'iterator'
+                                get: 'get'
+                                random: true
+                            },
+                            {
                                 type: 'IntMap<Integer>',
                                 creator: 'IntMap\$.MODULE\$.empty()'
                                 path: 'scala.collection.immutable.*'
@@ -204,7 +214,7 @@ tasks {
                             },
                             {
                                 type: 'IPersistentMap'
-                                creator: 'PersistentHashMap.EMPTY'
+                                creator: '(IPersistentMap) clojure.java.api.Clojure.var("clojure.core", "hash-map").invoke()'
                                 path: 'clojure.lang.*'
                                 insert: 'assoc'
                                 name: 'ClojurePersistentHashMap'
@@ -214,7 +224,7 @@ tasks {
                             },
                             {
                                 type: 'IPersistentMap'
-                                creator: 'PersistentTreeMap.EMPTY'
+                                creator: '(IPersistentMap) clojure.java.api.Clojure.var("clojure.core", "sorted-map").invoke()'
                                 path: 'clojure.lang.*'
                                 insert: 'assoc'
                                 name: 'ClojurePersistentTreeMap'

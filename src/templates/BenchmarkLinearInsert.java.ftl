@@ -1,7 +1,7 @@
 <@pp.dropOutputFile />
 
 <#list STRUCTURES as structure>
-<@pp.nestOutputFile name = "BenchmarkLinearInsert${structure.name}.java">
+<@pp.nestOutputFile name = "BenchmarkLinearInsert_${structure.name}.java">
 
 package thrive;
 
@@ -16,7 +16,7 @@ import java.util.HashSet;
 import java.util.Random;
 
 @State(Scope.Thread)
-public class BenchmarkLinearInsert${structure.name} {
+public class BenchmarkLinearInsert_${structure.name} {
     @Param({"1", "2", "4", "8", "16", "32", "64", "128", "256", "512", "1024", "2048", "4096", "8192", "16384", "32768",
     "65536", "131072", "262144", "524288", "1048576", "2097152", "4194304", "8388608", "16777316"})
     int size = 0;
@@ -39,7 +39,7 @@ public class BenchmarkLinearInsert${structure.name} {
 
     public static void main(String[] args) throws RunnerException {
         Options opt = new OptionsBuilder()
-            .include(BenchmarkLinearInsert${structure.name}.class.getSimpleName())
+            .include(BenchmarkLinearInsert_${structure.name}.class.getSimpleName())
             .build();
         new Runner(opt).run();
     }
