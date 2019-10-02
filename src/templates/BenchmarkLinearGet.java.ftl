@@ -21,41 +21,32 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class BenchmarkLinearGet_${structure.name} {
     @Param({"1", "2", "4", "8", "16", "32", "64", "128", "256", "512", "1024", "2048", "4096", "8192", "16384", "32768",
     "65536", "131072", "262144", "524288", "1048576", "2097152", "4194304", "8388608", "16777316"})
-    static int size = 0;
+    int size = 0;
 
     ${structure.type} map;
+    int[] is = new int[100];
 
     @Setup
     public void setup() {
         map = ${structure.creator};
-        for (int c = 0; c < size; c++) {
+        for (var c = 0; c < size; c++) {
             map = map.${structure.insert}(c, (Integer)c);
         }
-    }
-
-    @State(Scope.Thread)
-    public static class GetState {
-        public int[] is = new int[100];
-
-        private static final AtomicInteger i = new AtomicInteger(0);
-        @Setup
-        public void setup() {
-            Random rand = new Random(37 * i.addAndGet(3));
-            for (int n = 0; n < is.length; n++) {
-                is[n] = rand.nextInt(Integer.MAX_VALUE);
-            }
+        var rand = new Random(42);
+        for (var n = 0; n < is.length; n++) {
+            is[n] = rand.nextInt(size);
         }
     }
 
     @Benchmark
-    public void hittingGetLinear${structure.name}(GetState state, Blackhole bh) {
-        for (int i: state.is) {
+    public void hittingGetLinear${structure.name}(Blackhole bh) {
+        for (var i: is) {
             bh.consume(map.${structure.get}(i));
         }
     }
 
     public static void main(String[] args) throws RunnerException {
-        Options opt = new OptionsBuilder()
+        var opt = new OptionsBuilder()
                 .include(BenchmarkLinearGet_${structure.name}.class.getSimpleName())
                 .build();
         new Runner(opt).run();

@@ -61,7 +61,7 @@ jmh {
     warmup = '1s'
     iterations = 20
     timeOnIteration = '1s'
-    fork = 5
+    fork = 3
     forceGC = true
     benchmarkMode = ['thrpt']
     jvmArgs = ['-Xmx4G', '-Xms4G', '-XX:+UseG1GC']
@@ -110,7 +110,6 @@ tasks {
                                 name: 'Trie1'
                                 iterator: 'entries'
                                 get: 'get'
-                                random: true
                             },
                             {
                                 type: 'Trie1j<Integer>'
@@ -120,7 +119,15 @@ tasks {
                                 name: 'Trie1j'
                                 iterator: 'entries'
                                 get: 'get'
-                                random: true
+                            },
+                            {
+                                type: 'Trie1j64<Integer>'
+                                creator: 'new Trie1j64<Integer>()'
+                                path: 'thrive.Trie1j64'
+                                insert: 'insert'
+                                name: 'Trie1j64'
+                                iterator: 'entries'
+                                get: 'get'
                             },
                             {
                                 type: 'Trie2<Integer>'
@@ -130,7 +137,6 @@ tasks {
                                 name: 'Trie2'
                                 iterator: 'entries'
                                 get: 'get'
-                                random: true
                             },
                             {
                                 type: 'Trie2j<Integer>'
@@ -140,7 +146,15 @@ tasks {
                                 name: 'Trie2j'
                                 iterator: 'entries'
                                 get: 'get'
-                                random: true
+                            },
+                            {
+                                type: 'Trie2j64<Integer>'
+                                creator: 'new Trie2j64<Integer>()'
+                                path: 'thrive.Trie2j64'
+                                insert: 'insert'
+                                name: 'Trie2j64'
+                                iterator: 'entries'
+                                get: 'get'
                             },
                             {
                                 type: 'Trie3<Integer>'
@@ -150,7 +164,6 @@ tasks {
                                 name: 'Trie3'
                                 iterator: 'entries'
                                 get: 'get'
-                                random: true
                             },
                             {
                                 type: 'Trie3j<Integer>'
@@ -160,7 +173,6 @@ tasks {
                                 name: 'Trie3j'
                                 iterator: 'entries'
                                 get: 'get'
-                                random: true
                             },
                             {
                                 type: 'PersistentHashMap<Integer, Integer>'
@@ -170,7 +182,6 @@ tasks {
                                 name: 'PersistentHashMap'
                                 iterator: 'iterator'
                                 get: 'get'
-                                random: true
                             },
                             {
                                 type: 'PersistentTreeMap<Integer, Integer>'
@@ -180,7 +191,6 @@ tasks {
                                 name: 'PersistentTreeMap'
                                 iterator: 'iterator'
                                 get: 'get'
-                                random: true
                             },
                             {
                                 type: 'ArrayMap<Integer>'
@@ -190,7 +200,6 @@ tasks {
                                 name: 'ArrayMap'
                                 iterator: 'entries'
                                 get: 'get'
-                                random: false
                             },
                             {
                                 type: 'HashMap<Integer, Integer>',
@@ -200,7 +209,6 @@ tasks {
                                 name: 'ScalaHashMap'
                                 iterator: 'iterator'
                                 get: 'get'
-                                random: true
                             },
                             {
                                 type: 'IntMap<Integer>',
@@ -210,7 +218,6 @@ tasks {
                                 name: 'ScalaIntMap'
                                 iterator: 'iterator'
                                 get: 'get'
-                                random: true
                             },
                             {
                                 type: 'IPersistentMap'
@@ -220,7 +227,6 @@ tasks {
                                 name: 'ClojurePersistentHashMap'
                                 iterator: 'iterator'
                                 get: 'valAt'
-                                random: true
                             },
                             {
                                 type: 'IPersistentMap'
@@ -230,7 +236,6 @@ tasks {
                                 name: 'ClojurePersistentTreeMap'
                                 iterator: 'iterator'
                                 get: 'valAt'
-                                random: true
                             }
                         ]
                     """

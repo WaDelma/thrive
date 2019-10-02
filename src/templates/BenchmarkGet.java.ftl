@@ -1,7 +1,6 @@
 <@pp.dropOutputFile />
 
 <#list STRUCTURES as structure>
-<#if structure.random>
 <@pp.nestOutputFile name = "BenchmarkGet_${structure.name}.java">
 
 package thrive;
@@ -22,23 +21,28 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class BenchmarkGet_${structure.name} {
     @Param({"1", "2", "4", "8", "16", "32", "64", "128", "256", "512", "1024", "2048", "4096", "8192", "16384", "32768",
     "65536", "131072", "262144", "524288", "1048576", "2097152", "4194304", "8388608", "16777316"})
-    static int size = 0;
+    int size = 0;
+    @Param({"0.25", "0.5", "0.75"})
+    double density = 0.;
 
-    static int[] xs;
+    int[] xs;
 
     ${structure.type} map;
 
-    static HashSet< Integer> set;
+    HashSet< Integer> set;
+
+    int[] is = new int[100];
+    int[] nis = new int[100];
 
     @Setup
     public void setup() {
         xs = new int[size];
         map = ${structure.creator};
-        Random rand = new Random(42);
+        var rand = new Random(42);
         set = new HashSet<>(size);
-        for (int c = 0; c < size; c++) {
+        for (var c = 0; c < size; c++) {
             while (true) {
-                xs[c] = rand.nextInt(Integer.MAX_VALUE);
+                xs[c] = rand.nextInt(size + (int) Math.round(size / density));
                 if (set.contains(xs[c])) {
                     continue;
                 }
@@ -47,53 +51,40 @@ public class BenchmarkGet_${structure.name} {
                 break;
             }
         }
-    }
-
-    @State(Scope.Thread)
-    public static class GetState {
-        public int[] is = new int[100];
-        public int[] nis = new int[100];
-
-        private static final AtomicInteger i = new AtomicInteger(0);
-        @Setup
-        public void setup() {
-            Random rand = new Random(37 * i.addAndGet(3));
-            for (int n = 0; n < is.length; n++) {
-                is[n] = xs[rand.nextInt(size)];
-            }
-            for (int n = 0; n < nis.length; n++) {
-                while (true) {
-                    nis[n] = rand.nextInt(Integer.MAX_VALUE);
-                    if (set.contains(nis[n])) {
-                        continue;
-                    }
-                    break;
+        for (var n = 0; n < is.length; n++) {
+            is[n] = xs[rand.nextInt(size)];
+        }
+        for (var n = 0; n < nis.length; n++) {
+            while (true) {
+                nis[n] = rand.nextInt(size + (int) Math.round(size / density));
+                if (set.contains(nis[n])) {
+                    continue;
                 }
+                break;
             }
         }
     }
 
     @Benchmark
-    public void hittingGet${structure.name}(GetState state, Blackhole bh) {
-        for (int i: state.is) {
+    public void hittingGet${structure.name}(Blackhole bh) {
+        for (var i: is) {
             bh.consume(map.${structure.get}(i));
         }
     }
 
     @Benchmark
-    public void missingGet${structure.name}(GetState state, Blackhole bh) {
-        for (int i: state.nis) {
+    public void missingGet${structure.name}(Blackhole bh) {
+        for (var i: nis) {
             bh.consume(map.${structure.get}(i));
         }
     }
 
     public static void main(String[] args) throws RunnerException {
-        Options opt = new OptionsBuilder()
+        var opt = new OptionsBuilder()
                 .include(BenchmarkGet_${structure.name}.class.getSimpleName())
                 .build();
         new Runner(opt).run();
     }
 }
 </@pp.nestOutputFile>
-</#if>
 </#list>

@@ -1,7 +1,6 @@
 <@pp.dropOutputFile />
 
 <#list STRUCTURES as structure>
-<#if structure.random>
 <@pp.nestOutputFile name = "BenchmarkIterator_${structure.name}.java">
 
 package thrive;
@@ -22,7 +21,10 @@ import java.util.Iterator;
 public class BenchmarkIterator_${structure.name} {
     @Param({"1", "2", "4", "8", "16", "32", "64", "128", "256", "512", "1024", "2048", "4096", "8192", "16384", "32768",
     "65536", "131072", "262144", "524288", "1048576", "2097152", "4194304", "8388608", "16777316"})
-    static int size = 0;
+    int size = 0;
+    @Param({"0.25", "0.5", "0.75"})
+    double density = 0.;
+
 
     int[] xs;
 
@@ -34,15 +36,15 @@ public class BenchmarkIterator_${structure.name} {
     public void setup() {
         xs = new int[size];
         map = ${structure.creator};
-        Random rand = new Random(42);
+        var rand = new Random(42);
         set = new HashSet<>(size);
-        for (int c = 0; c < size; c++) {
+        for (var c = 0; c < size; c++) {
             while (true) {
-                xs[c] = rand.nextInt(Integer.MAX_VALUE);
+                xs[c] = rand.nextInt(size + (int) Math.round(size / density));
                 if (set.contains(xs[c])) {
                     continue;
                 }
-                map = map.${structure.insert}(xs[c], (Integer)xs[c]);
+                map = map.${structure.insert}(xs[c], (Integer) xs[c]);
                 break;
             }
         }
@@ -57,12 +59,11 @@ public class BenchmarkIterator_${structure.name} {
     }
 
     public static void main(String[] args) throws RunnerException {
-        Options opt = new OptionsBuilder()
+        var opt = new OptionsBuilder()
                 .include(BenchmarkIterator_${structure.name}.class.getSimpleName())
                 .build();
         new Runner(opt).run();
     }
 }
 </@pp.nestOutputFile>
-</#if>
 </#list>
