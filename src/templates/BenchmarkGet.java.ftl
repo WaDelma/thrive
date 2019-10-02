@@ -42,7 +42,7 @@ public class BenchmarkGet_${structure.name} {
         set = new HashSet<>(size);
         for (var c = 0; c < size; c++) {
             while (true) {
-                xs[c] = rand.nextInt(size + (int) Math.round(size / density));
+                xs[c] = rand.nextInt((int) Math.ceil(size / density));
                 if (set.contains(xs[c])) {
                     continue;
                 }
@@ -56,7 +56,7 @@ public class BenchmarkGet_${structure.name} {
         }
         for (var n = 0; n < nis.length; n++) {
             while (true) {
-                nis[n] = rand.nextInt(size + (int) Math.round(size / density));
+                nis[n] = rand.nextInt((int) Math.ceil(size / density));
                 if (set.contains(nis[n])) {
                     continue;
                 }

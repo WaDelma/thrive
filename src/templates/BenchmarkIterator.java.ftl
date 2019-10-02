@@ -40,7 +40,7 @@ public class BenchmarkIterator_${structure.name} {
         set = new HashSet<>(size);
         for (var c = 0; c < size; c++) {
             while (true) {
-                xs[c] = rand.nextInt(size + (int) Math.round(size / density));
+                xs[c] = rand.nextInt((int) Math.ceil(size / density));
                 if (set.contains(xs[c])) {
                     continue;
                 }
