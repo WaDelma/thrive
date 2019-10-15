@@ -236,6 +236,15 @@ tasks {
                                 name: 'ClojurePersistentTreeMap'
                                 iterator: 'iterator'
                                 get: 'valAt'
+                            },
+                            {
+                                type: 'RrbMap<Integer>'
+                                creator: 'new RrbMap<Integer>()'
+                                path: 'thrive.RrbMap'
+                                insert: 'insert'
+                                name: 'PaguroRrbMap'
+                                iterator: 'entries'
+                                get: 'get'
                             }
                         ]
                     """
