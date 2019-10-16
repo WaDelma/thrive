@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 import static thrive.TrieUtils.*;
 
 
-public final class Trie1j<T> implements Trie<T> {
+public final class Trie1j<T> implements IntMap<T> {
     private static final int BITS = 5;
 
     private Node<T> root;

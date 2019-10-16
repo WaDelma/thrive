@@ -1,6 +1,5 @@
 package thrive;
 
-import kotlin.NotImplementedError;
 import kotlin.Pair;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,7 +11,7 @@ import java.util.stream.Stream;
 
 import static thrive.TrieUtils.*;
 
-public class Trie3j<T> implements Trie<T> {
+public class Trie3j<T> implements IntMap<T> {
     private static final int BITS = 5;
 
     private Node3j<T> root;

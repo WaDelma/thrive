@@ -1,11 +1,12 @@
 package thrive;
 
 import kotlin.Pair;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Iterator;
 
-public class ArrayMap<T> implements Cloneable {
+public class ArrayMap<T> implements Cloneable, IntMap<T>  {
     private Object[] array;
     private int size;
 
@@ -13,6 +14,8 @@ public class ArrayMap<T> implements Cloneable {
         array = new Object[0];
     }
 
+    @Override
+    @NotNull
     public ArrayMap<T> insert(int key, T value) {
         if (key >= array.length) {
             var tmp = new Object[Math.max(array.length == 0 ? 64 : 2 * array.length, key + 1)];
@@ -30,6 +33,7 @@ public class ArrayMap<T> implements Cloneable {
         return size;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public T get(int key) {
         if (key < array.length) {
@@ -46,8 +50,15 @@ public class ArrayMap<T> implements Cloneable {
         return clone;
     }
 
+    @Override
+    @NotNull
     public Iterator<Pair<Integer, T>> entries() {
         return new Iter();
+    }
+
+    @Override
+    public void debug() {
+
     }
 
     private class Iter implements Iterator<Pair<Integer, T>> {

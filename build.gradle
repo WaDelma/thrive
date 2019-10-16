@@ -245,6 +245,24 @@ tasks {
                                 name: 'PaguroRrbMap'
                                 iterator: 'entries'
                                 get: 'get'
+                            },
+                            {
+                                type: 'ScalaRrbMap<Integer>'
+                                creator: 'new ScalaRrbMap<Integer>()'
+                                path: 'thrive.ScalaRrbMap'
+                                insert: 'insert'
+                                name: 'ScalaRrbMap'
+                                iterator: 'entries'
+                                get: 'get'
+                            },
+                            {
+                                type: 'ClojureRrbMap<Integer>'
+                                creator: 'new ClojureRrbMap<Integer>()'
+                                path: 'thrive.ClojureRrbMap'
+                                insert: 'insert'
+                                name: 'ClojureRrbMap'
+                                iterator: 'entries'
+                                get: 'get'
                             }
                         ]
                     """

@@ -4,7 +4,7 @@ import java.util.*
 
 private const val BITS: Int = 5
 
-class Trie3<T> : Trie<T> {
+class Trie3<T> : IntMap<T> {
     private val root: Node3<T>?
 
     constructor() {

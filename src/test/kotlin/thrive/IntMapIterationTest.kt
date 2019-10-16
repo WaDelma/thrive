@@ -7,7 +7,7 @@ import kotlin.random.Random
 import kotlin.test.assertEquals
 
 @RunWith(Parameterized::class)
-class TrieIterationTest(val trie: () -> Trie<String>, val desc: String) {
+class IntMapIterationTest(val intMap: () -> IntMap<String>, val desc: String) {
     companion object Params {
         @Parameterized.Parameters(name = " with {1}")
         @JvmStatic
@@ -17,18 +17,22 @@ class TrieIterationTest(val trie: () -> Trie<String>, val desc: String) {
             arrayOf<Any>({ Trie1j<String>() }, "Trie1j"),
             arrayOf<Any>({ Trie2j<String>() }, "Trie2j"),
             arrayOf<Any>({ Trie3<String>() }, "Trie3"),
-            arrayOf<Any>({ Trie3j<String>() }, "Trie3j")
+            arrayOf<Any>({ Trie3j<String>() }, "Trie3j"),
+            arrayOf<Any>({ ArrayMap<String>() }, "ArrayMap"),
+            arrayOf<Any>({ RrbMap<String>() }, "RrbMap"),
+            arrayOf<Any>({ ClojureRrbMap<String>() }, "ClojureRrbMap"),
+            arrayOf<Any>({ ScalaRrbMap<String>() }, "ScalaRrbMap")
         )
     }
 
     @Test
     fun `iterating empty map is empty`() {
-        assert(!trie().entries().hasNext())
+        assert(!intMap().entries().hasNext())
     }
 
     @Test
     fun `iterating singleton map is singleton`() {
-        val map = trie().insert(1, "1")
+        val map = intMap().insert(1, "1")
         val iter = map.entries()
         assert(iter.hasNext())
         assertEquals(1 to "1", iter.next())
@@ -37,13 +41,13 @@ class TrieIterationTest(val trie: () -> Trie<String>, val desc: String) {
 
     @Test
     fun `value can be taken from iterator without checking if it has one`() {
-        val map = trie().insert(1, "1")
+        val map = intMap().insert(1, "1")
         assertEquals(1 to "1", map.entries().next())
     }
 
     @Test
     fun `iterating 32 entries works`() {
-        var map = trie()
+        var map = intMap()
         (0..31).forEach {
             map = map.insert(it, "v$it")
         }
@@ -60,7 +64,7 @@ class TrieIterationTest(val trie: () -> Trie<String>, val desc: String) {
 
     @Test
     fun `iterating 33 entries works`() {
-        var map = trie()
+        var map = intMap()
         (0..32).forEach {
             map = map.insert(it, "v$it")
         }
@@ -77,7 +81,7 @@ class TrieIterationTest(val trie: () -> Trie<String>, val desc: String) {
 
     @Test
     fun `iterating 65 entries works`() {
-        var map = trie()
+        var map = intMap()
         (0..64).forEach {
             map = map.insert(it, "v$it")
         }
@@ -94,9 +98,9 @@ class TrieIterationTest(val trie: () -> Trie<String>, val desc: String) {
 
     @Test
     fun `Iterating lots of values works`() {
-        var map = trie()
+        var map = intMap()
         val rand = Random(42)
-        val added = generateSequence(rand::nextInt).take(10000).toHashSet()
+        val added = generateSequence { rand.nextInt(1000000) }.take(10000).toHashSet()
         val expect = hashSetOf<Int>()
         added.forEachIndexed { i, key ->
             expect.add(i)

@@ -48,17 +48,20 @@ public class Mem {
         var h = new Holder<>(m);
         return new Pair<>((k, v) -> t.consume(h, k, v), () -> get.apply(h));
     }
-    private static Pair<BiConsumer<Integer, Integer>, Supplier<Object>> fromTrie(Trie trie) {
-        return unify(trie, (m, k, v) -> m.val = m.val.insert(k, v), Holder::getVal);
+    private static Pair<BiConsumer<Integer, Integer>, Supplier<Object>> fromPersistentIntMap(IntMap intMap) {
+        return unify(intMap, (m, k, v) -> m.val = m.val.insert(k, v), Holder::getVal);
     }
     @SuppressWarnings("unchecked")
     private static final ArrayList<Supplier<Pair<BiConsumer<Integer, Integer>, Supplier<Object>>>> structures = new ArrayList<>() {{
-        this.add(() -> fromTrie(new Trie1<>()));
-        this.add(() -> fromTrie(new Trie1j<>()));
-        this.add(() -> fromTrie(new Trie2<>()));
-        this.add(() -> fromTrie(new Trie2j<>()));
-        this.add(() -> fromTrie(new Trie3<>()));
-        this.add(() -> fromTrie(new Trie3j<>()));
+        this.add(() -> fromPersistentIntMap(new Trie1<>()));
+        this.add(() -> fromPersistentIntMap(new Trie1j<>()));
+        this.add(() -> fromPersistentIntMap(new Trie2<>()));
+        this.add(() -> fromPersistentIntMap(new Trie2j<>()));
+        this.add(() -> fromPersistentIntMap(new Trie3<>()));
+        this.add(() -> fromPersistentIntMap(new Trie3j<>()));
+        this.add(() -> fromPersistentIntMap(new RrbMap<>()));
+        this.add(() -> fromPersistentIntMap(new ScalaRrbMap<>()));
+        this.add(() -> fromPersistentIntMap(new ClojureRrbMap<>()));
         this.add(() -> unify(PersistentHashMap.<Integer, Integer>empty(), (m, k, v) -> m.val = m.val.assoc(k, v), Holder::getVal));
         this.add(() -> unify(PersistentTreeMap.<Integer, Integer>empty(), (m, k, v) -> m.val = m.val.assoc(k, v), Holder::getVal));
         this.add(() -> unify(new ArrayMap<>(), (m, k, v) -> { m.val.insert(k, v); }, (h) -> {
