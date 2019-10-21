@@ -89,12 +89,12 @@ public class Mem {
                     add.accept(map, j);
                 }
                 var layout = GraphLayout.parseInstance(finish.apply(map));
-                System.out.println(name + "\t" + getMap.apply(map).getClass().getSimpleName() + "\t" + amount +  "\t" + layout.totalSize());
+                System.out.println(name + "," + getMap.apply(map).getClass().getSimpleName() + "," + amount +  "," + layout.totalSize());
             }
         }
     }
     public static void main(String[] args) {
-        System.out.println("test\tname\tamount\tsize");
+        System.out.println("test,name,amount,size");
         check(
                 "lin",
                 23,
