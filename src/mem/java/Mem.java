@@ -82,7 +82,7 @@ public class Mem {
             Function<T, Object> finish
     ) {
         for (var m: structures) {
-            for (int i = 0; i < sizes; i++) {
+            for (int i = 0; i <= sizes; i++) {
                 var amount = 1 << i;
                 var map = init.apply(m);
                 for (int j = 0; j < amount; j++) {

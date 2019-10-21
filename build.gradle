@@ -49,6 +49,8 @@ dependencies {
     memImplementation("org.organicdesign:Paguro-KF:3.5.6")
     memImplementation("org.openjdk.jol:jol-core:0.9")
     memImplementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    memImplementation("org.clojure:clojure:1.10.1")
+    memImplementation("org.scala-lang:scala-library:2.11.12")
 }
 
 jmh {
