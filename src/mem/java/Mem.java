@@ -82,14 +82,18 @@ public class Mem {
             Function<T, Object> finish
     ) {
         for (var m: structures) {
-            for (int i = 0; i <= sizes; i++) {
-                var amount = 1 << i;
-                var map = init.apply(m);
-                for (int j = 0; j < amount; j++) {
-                    add.accept(map, j);
+            try {
+                for (int i = 0; i <= sizes; i++) {
+                    var amount = 1 << i;
+                    var map = init.apply(m);
+                    for (int j = 0; j < amount; j++) {
+                        add.accept(map, j);
+                    }
+                    var layout = GraphLayout.parseInstance(finish.apply(map));
+                    System.out.println(name + "," + getMap.apply(map).getClass().getSimpleName() + "," + amount + "," + layout.totalSize());
                 }
-                var layout = GraphLayout.parseInstance(finish.apply(map));
-                System.out.println(name + "," + getMap.apply(map).getClass().getSimpleName() + "," + amount +  "," + layout.totalSize());
+            } catch (OutOfMemoryError e) {
+                System.out.println("out of memory");
             }
         }
     }
