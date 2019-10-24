@@ -77,7 +77,7 @@ public class Mem {
             String name,
             int sizes,
             Function<Supplier<Pair<BiConsumer<Integer, Integer>, Supplier<Object>>>, T> init,
-            BiConsumer<T, Integer> add,
+            TriConsumer<T, Integer, Integer> add,
             Function<T, Object> getMap,
             Function<T, Object> finish
     ) {
@@ -87,7 +87,7 @@ public class Mem {
                     var amount = 1 << i;
                     var map = init.apply(m);
                     for (int j = 0; j < amount; j++) {
-                        add.accept(map, j);
+                        add.consume(map, j, amount);
                     }
                     var layout = GraphLayout.parseInstance(finish.apply(map));
                     System.out.println(name + "," + getMap.apply(map).getClass().getSimpleName() + "," + amount + "," + layout.totalSize());
@@ -103,7 +103,7 @@ public class Mem {
                 "lin",
                 23,
                 Supplier::get,
-                (p, i) -> p.fst.accept(i, 0),
+                (p, i, a) -> p.fst.accept(i, 0),
                 (p) -> p.snd.get(),
                 (p) -> p.snd.get()
         );
@@ -111,7 +111,7 @@ public class Mem {
                 "lincumu",
                 23,
                 (m) -> new Pair<>(m.get(), new ArrayList<>()),
-                (p, i) -> {
+                (p, i, a) -> {
                     p.fst.fst.accept(i, 0);
                     p.snd.add(p.fst.snd.get());
                 },
@@ -122,7 +122,7 @@ public class Mem {
                 "rand",
                 23,
                 (m) -> new Pair<>(m.get(), new Random(42)),
-                (p, i) -> p.fst.fst.accept(p.snd.nextInt(), 0),
+                (p, i, a) -> p.fst.fst.accept(p.snd.nextInt((int) Math.ceil(a / 0.5)), 0),
                 (p) -> p.fst.snd.get(),
                 (p) -> p.fst.snd.get()
         );
@@ -130,8 +130,8 @@ public class Mem {
                 "randcumu",
                 23,
                 (m) -> new Triple<>(m.get(), new Random(42), new ArrayList<>()),
-                (p, i) -> {
-                    p.fst.fst.accept(p.snd.nextInt(), 0);
+                (p, i, a) -> {
+                    p.fst.fst.accept(p.snd.nextInt((int) Math.ceil(a / 0.5)), 0);
                     p.thr.add(p.fst.snd.get());
                 },
                 (p) -> p.fst.snd.get(),
