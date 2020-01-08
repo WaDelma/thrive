@@ -14,19 +14,28 @@ public class ArrayMap<T> implements Cloneable, IntMap<T>  {
         array = new Object[0];
     }
 
+    private ArrayMap(Object[] array, int size) {
+        this.array = array;
+        this.size = size;
+    }
+
     @Override
     @NotNull
     public ArrayMap<T> insert(int key, T value) {
+        Object[] newArray;
         if (key >= array.length) {
             var tmp = new Object[Math.max(array.length == 0 ? 64 : 2 * array.length, key + 1)];
             System.arraycopy(array, 0, tmp, 0, array.length);
-            array = tmp;
+            newArray = tmp;
+        } else {
+            newArray = array.clone();
         }
-        if (array[key] == null) {
-            size += 1;
+        var newSize = size;
+        if (newArray[key] == null) {
+            newSize += 1;
         }
-        array[key] = value;
-        return this;
+        newArray[key] = value;
+        return new ArrayMap<>(newArray, newSize);
     }
 
     public int size() {
@@ -40,14 +49,6 @@ public class ArrayMap<T> implements Cloneable, IntMap<T>  {
             return (T) array[key];
         }
         return null;
-    }
-
-    @SuppressWarnings("unchecked")
-    public Object clone() throws CloneNotSupportedException {
-        ArrayMap<T> clone = (ArrayMap<T>) super.clone();
-        clone.array = Arrays.copyOf(this.array, this.array.length);
-        clone.size = this.size;
-        return clone;
     }
 
     @Override

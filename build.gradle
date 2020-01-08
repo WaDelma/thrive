@@ -181,7 +181,7 @@ tasks {
                                 creator: 'PersistentHashMap.empty()'
                                 path: 'org.organicdesign.fp.collections.PersistentHashMap'
                                 insert: 'assoc'
-                                name: 'PersistentHashMap'
+                                name: 'PaguroPersistentHashMap'
                                 iterator: 'iterator'
                                 get: 'get'
                             },
@@ -190,7 +190,7 @@ tasks {
                                 creator: 'PersistentTreeMap.empty()'
                                 path: 'org.organicdesign.fp.collections.PersistentTreeMap'
                                 insert: 'assoc'
-                                name: 'PersistentTreeMap'
+                                name: 'PaguroPersistentTreeMap'
                                 iterator: 'iterator'
                                 get: 'get'
                             },
@@ -263,6 +263,15 @@ tasks {
                                 path: 'thrive.ClojureRrbMap'
                                 insert: 'insert'
                                 name: 'ClojureRrbMap'
+                                iterator: 'entries'
+                                get: 'get'
+                            },
+                            {
+                                type: 'SdkMap<Integer>'
+                                creator: 'new SdkMap<Integer>()'
+                                path: 'thrive.SdkMap'
+                                insert: 'insert'
+                                name: 'SdkMap'
                                 iterator: 'entries'
                                 get: 'get'
                             }
