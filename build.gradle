@@ -158,6 +158,14 @@ tasks {
                                 iterator: 'entries'
                                 get: 'get'
                             },
+                                type: 'Trie2j16<Integer>'
+                                creator: 'new Trie2j16<Integer>()'
+                                path: 'thrive.Trie2j16'
+                                insert: 'insert'
+                                name: 'Trie2j16'
+                                iterator: 'entries'
+                                get: 'get'
+                            },
                             {
                                 type: 'Trie3<Integer>'
                                 creator: 'new Trie3<Integer>()'

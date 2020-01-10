@@ -73,6 +73,7 @@ public class Mem {
             }
         };
     }
+
     private static Map fromPersistentIntMap(IntMap<Integer> intMap) {
         return unify(intMap, (m, k, v) -> m.val = m.val.insert(k, v), Holder::getVal, (m, k) -> m.val.get(k) != null);
     }
@@ -84,6 +85,7 @@ public class Mem {
         this.put("Trie2", () -> fromPersistentIntMap(new Trie2<>()));
         this.put("Trie2j", () -> fromPersistentIntMap(new Trie2j<>()));
         this.put("Trie2j64", () -> fromPersistentIntMap(new Trie2j64<>()));
+        this.put("Trie2j16", () -> fromPersistentIntMap(new Trie2j16<>()));
         this.put("Trie3", () -> fromPersistentIntMap(new Trie3<>()));
         this.put("Trie3j", () -> fromPersistentIntMap(new Trie3j<>()));
         this.put("PaguroRrbMap", () -> fromPersistentIntMap(new RrbMap<>()));
@@ -99,7 +101,7 @@ public class Mem {
         this.put("ArrayMap", () -> fromPersistentIntMap(new ArrayMap<>()));
     }};
 
-    static <T> void check(
+    private static <T> void check(
             String name,
             int sizes,
             Function<Supplier<Map>, T> init,
@@ -122,6 +124,7 @@ public class Mem {
             }
         }
     }
+
     public static void main(String[] args) {
         System.out.println("test,name,amount,size");
         check(

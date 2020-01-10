@@ -12,30 +12,30 @@ class ArrayMapTest {
     }
     @Test
     fun `map with one entry has size 1`() {
-        val map =  ArrayMap<Int>()
-        map.insert(0, 0)
+        val map= ArrayMap<Int>()
+            .insert(0, 0)
         assertEquals(1, map.size())
     }
     @Test
     fun `map with two entry has size 2`() {
-        val map =  ArrayMap<Int>()
-        map.insert(0, 0)
-        map.insert(100, 100)
+        val map= ArrayMap<Int>()
+            .insert(0, 0)
+            .insert(100, 100)
         assertEquals(2, map.size())
     }
     @Test
     fun `replacing entry doesn't change size`() {
-        val map =  ArrayMap<Int>()
-        map.insert(0, 0)
-        map.insert(0, 1)
+        val map= ArrayMap<Int>()
+            .insert(0, 0)
+            .insert(0, 1)
         assertEquals(1, map.size())
     }
     @Test
     fun `size works for lots of entries`() {
-        val map =  ArrayMap<Int>()
+        var map = ArrayMap<Int>()
         val amount = 100000
         (0 until amount).forEach {
-            map.insert(it, it)
+            map = map.insert(it, it)
         }
         assertEquals(amount, map.size())
     }
@@ -45,28 +45,28 @@ class ArrayMapTest {
     }
     @Test
     fun `iterating singleton map has the entry`() {
-        val map =  ArrayMap<Int>()
-        map.insert(0, 0)
+        val map= ArrayMap<Int>()
+            .insert(0, 0)
         assertEquals(setOf(0 to 0), map.entries().asSequence().toSet())
     }
     @Test
     fun `iterating two entry map has both entries`() {
-        val map =  ArrayMap<Int>()
-        map.insert(0, 0)
-        map.insert(100, 100)
+        val map= ArrayMap<Int>()
+            .insert(0, 0)
+            .insert(100, 100)
         assertEquals(setOf(0 to 0, 100 to 100), map.entries().asSequence().toSet())
     }
     @Test
     fun `iterating map with lots of entries works`() {
-        val map =  ArrayMap<Int>()
+        var map = ArrayMap<Int>()
         val rng = Random(42)
-        val amount = 100000
+        val amount = 10000
         val nums = rng
             .ints(0, amount * 10)
             .limit(amount.toLong())
             .asSequence()
             .toSet()
-        nums.forEach { map.insert(it, it) }
+        nums.forEach { map = map.insert(it, it) }
         assertEquals(nums.map { it to it }.toSet(), map.entries().asSequence().toSet())
     }
 }
