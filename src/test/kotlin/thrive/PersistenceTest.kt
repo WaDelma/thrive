@@ -7,7 +7,7 @@ import kotlin.random.Random
 import kotlin.test.assertEquals
 
 @RunWith(Parameterized::class)
-class PersistentTest(val intMap: () -> IntMap<String>, val desc: String) {
+class PersistenceTest(val intMap: () -> IntMap<String>, val desc: String) {
     companion object Params {
         @Parameterized.Parameters(name = " with {1}")
         @JvmStatic

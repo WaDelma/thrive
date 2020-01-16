@@ -10,12 +10,10 @@ import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
-import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
 import java.util.HashSet;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @State(Scope.Thread)
 public class BenchmarkGet_${structure.name} {

@@ -2,12 +2,12 @@ import clojure.lang.IPersistentMap;
 import org.openjdk.jol.info.GraphLayout;
 import org.organicdesign.fp.collections.PersistentHashMap;
 import org.organicdesign.fp.collections.PersistentTreeMap;
+import scala.math.Ordering$;
 import thrive.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
-import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -87,12 +87,12 @@ public class Mem {
         this.put("Trie2j64", () -> fromPersistentIntMap(new Trie2j64<>()));
         this.put("Trie2j16", () -> fromPersistentIntMap(new Trie2j16<>()));
         this.put("Trie3", () -> fromPersistentIntMap(new Trie3<>()));
-        this.put("Trie3j", () -> fromPersistentIntMap(new Trie3j<>()));
         this.put("PaguroRrbMap", () -> fromPersistentIntMap(new RrbMap<>()));
         this.put("PaguroHashMap", () -> unify(PersistentHashMap.<Integer, Integer>empty(), (m, k, v) -> m.val = m.val.assoc(k, v), Holder::getVal, (m, k) -> m.val.containsKey(k)));
         this.put("PaguroTreeMap", () -> unify(PersistentTreeMap.<Integer, Integer>empty(), (m, k, v) -> m.val = m.val.assoc(k, v), Holder::getVal, (m, k) -> m.val.containsKey(k)));
         this.put("ScalaRrbMap", () -> fromPersistentIntMap(new ScalaRrbMap<>()));
         this.put("ScalaHashMap", () -> unify(scala.collection.immutable.HashMap$.MODULE$.empty(), (m, k, v) -> m.val = m.val.updated(k, v), Holder::getVal, (m, k) -> m.val.contains(k)));
+        this.put("ScalaTreeMap", () -> unify(scala.collection.immutable.TreeMap$.MODULE$.empty(Ordering$.MODULE$.comparatorToOrdering(java.util.Comparator.<Integer>naturalOrder())), (m, k, v) -> m.val = m.val.updated(k, v), Holder::getVal, (m, k) -> m.val.contains(k)));
         this.put("ScalaIntMap", () -> unify(scala.collection.immutable.IntMap$.MODULE$.empty(), (m, k, v) -> m.val = m.val.updated((int) k, v), Holder::getVal, (m, k) -> m.val.contains(k)));
         this.put("ClojureRrbMap", () -> fromPersistentIntMap(new ClojureRrbMap<>()));
         this.put("ClojureHashMap", () -> unify((IPersistentMap) clojure.java.api.Clojure.var("clojure.core", "hash-map").invoke(), (m, k, v) -> m.val = m.val.assoc(k, v), Holder::getVal, (m, k) -> m.val.containsKey(k)));
