@@ -129,7 +129,7 @@ public class Mem {
                 });
                 thread.start();
                 var target = 60*60*1000;
-                while (target > 0) {
+                while (target > 0 && thread.isAlive()) {
                     var before = System.currentTimeMillis();
                     try {
                         thread.join(target);
