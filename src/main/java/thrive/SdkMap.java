@@ -22,9 +22,8 @@ public class SdkMap<T> implements IntMap<T> {
     @NotNull
     @Override
     public SdkMap<T> insert(int key, T value) {
-        var newMap = new HashMap<>(map);
-        newMap.put(key, value);
-        return new SdkMap<>(newMap);
+        this.map.put(key, value);
+        return this;
     }
 
     @Nullable

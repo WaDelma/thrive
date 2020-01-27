@@ -69,9 +69,9 @@ public class ClojureRrbMap<T> implements IntMap<T> {
                 result = iter.first();
                 iter = iter.next();
                 i = index;
-                index++;
+                index += 1;
             } while(result == null);
-            found++;
+            found += 1;
             return new Pair<>(i, (T) result);
         }
     }

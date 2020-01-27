@@ -73,9 +73,9 @@ public class ScalaRrbMap<T> implements IntMap<T> {
             do {
                 result = iter.next();
                 i = index;
-                index++;
+                index += 1;
             } while(result == null);
-            found++;
+            found += 1;
             return new Pair<>(i, result);
         }
     }

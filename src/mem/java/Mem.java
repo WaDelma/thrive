@@ -8,6 +8,7 @@ import thrive.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -97,8 +98,8 @@ public class Mem {
         this.put("ClojureRrbMap", () -> fromPersistentIntMap(new ClojureRrbMap<>()));
         this.put("ClojureHashMap", () -> unify((IPersistentMap) clojure.java.api.Clojure.var("clojure.core", "hash-map").invoke(), (m, k, v) -> m.val = m.val.assoc(k, v), Holder::getVal, (m, k) -> m.val.containsKey(k)));
         this.put("ClojureTreeMap", () -> unify((IPersistentMap) clojure.java.api.Clojure.var("clojure.core", "sorted-map").invoke(), (m, k, v) -> m.val = m.val.assoc(k, v), Holder::getVal, (m, k) -> m.val.containsKey(k)));
-        this.put("SdkMap", () -> fromPersistentIntMap(new SdkMap<>()));
-        this.put("ArrayMap", () -> fromPersistentIntMap(new ArrayMap<>()));
+        this.put("SdkMap", () -> unify(new HashMap<>(), (m, k, v) -> m.val.put(k, v), m -> new HashMap<>(m.val), (m, k) -> m.val.containsKey(k)));
+        this.put("ArrayMap", () -> unify(new ArrayMap<>(), (m, k, v) -> m.val.insert(k, v), m -> new ArrayMap<>(m.val), (m, k) -> m.val.get(k) != null));
     }};
 
     private static <T> void check(
@@ -108,19 +109,51 @@ public class Mem {
             TriConsumer<T, Integer, Integer> add,
             Function<T, Object> finish
     ) {
-        for (var m: structures.entrySet()) {
-            try {
-                for (int i = 0; i <= sizes; i++) {
-                    var amount = 1 << i;
-                    var map = init.apply(m.getValue());
+        structures: for (var m: structures.entrySet()) {
+            for (int i = 0; i <= sizes; i++) {
+                var amount = 1 << i;
+                var map = init.apply(m.getValue());
+                var thread = new Thread(() -> {
                     for (int j = 0; j < amount; j++) {
                         add.consume(map, j, amount);
                     }
-                    var layout = GraphLayout.parseInstance(finish.apply(map));
-                    System.out.println(name + "," + m.getKey() + "," + amount + "," + layout.totalSize());
+                });
+                var skip = new AtomicBoolean(false);
+                thread.setUncaughtExceptionHandler((t, throwable) -> {
+                    if (throwable instanceof OutOfMemoryError) {
+                        System.out.println(name + "," + m.getKey() + "," + amount + "," + "oom");
+                    } else {
+                        throwable.printStackTrace();
+                    }
+                    skip.set(true);
+                });
+                thread.start();
+                var target = 60*60*1000;
+                while (target > 0) {
+                    var before = System.currentTimeMillis();
+                    try {
+                        thread.join(target);
+                    } catch (InterruptedException ignored) {
+                    }
+                    if (skip.get()) {
+                        continue structures;
+                    }
+                    var slept = System.currentTimeMillis() - before;
+                    target -= slept;
                 }
-            } catch (OutOfMemoryError e) {
-                System.out.println("out of memory");
+                if (thread.isAlive()) {
+                    System.out.println(name + "," + m.getKey() + "," + amount + "," + "oot");
+                    thread.interrupt();
+                    while (thread.isAlive()) {
+                        try {
+                            thread.join();
+                        } catch (InterruptedException ignored) {
+                        }
+                    }
+                    continue structures;
+                }
+                var layout = GraphLayout.parseInstance(finish.apply(map));
+                System.out.println(name + "," + m.getKey() + "," + amount + "," + layout.totalSize());
             }
         }
     }
