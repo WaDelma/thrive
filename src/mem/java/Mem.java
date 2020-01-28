@@ -110,50 +110,54 @@ public class Mem {
             Function<T, Object> finish
     ) {
         structures: for (var m: structures.entrySet()) {
-            for (int i = 0; i <= sizes; i++) {
-                var amount = 1 << i;
-                var map = init.apply(m.getValue());
-                var thread = new Thread(() -> {
-                    for (int j = 0; j < amount; j++) {
-                        add.consume(map, j, amount);
-                    }
-                });
-                var skip = new AtomicBoolean(false);
-                thread.setUncaughtExceptionHandler((t, throwable) -> {
-                    if (throwable instanceof OutOfMemoryError) {
-                        System.out.println(name + "," + m.getKey() + "," + amount + "," + "oom");
-                    } else {
-                        throwable.printStackTrace();
-                    }
-                    skip.set(true);
-                });
-                thread.start();
-                var target = 60*60*1000;
-                while (target > 0 && thread.isAlive()) {
-                    var before = System.currentTimeMillis();
-                    try {
-                        thread.join(target);
-                    } catch (InterruptedException ignored) {
-                    }
-                    if (skip.get()) {
-                        continue structures;
-                    }
-                    var slept = System.currentTimeMillis() - before;
-                    target -= slept;
-                }
-                if (thread.isAlive()) {
-                    System.out.println(name + "," + m.getKey() + "," + amount + "," + "oot");
-                    thread.interrupt();
-                    while (thread.isAlive()) {
+            try {
+                for (int i = 0; i <= sizes; i++) {
+                    var amount = 1 << i;
+                    var map = init.apply(m.getValue());
+                    var thread = new Thread(() -> {
+                        for (int j = 0; j < amount; j++) {
+                            add.consume(map, j, amount);
+                        }
+                    });
+                    var skip = new AtomicBoolean(false);
+                    thread.setUncaughtExceptionHandler((t, throwable) -> {
+                        if (throwable instanceof OutOfMemoryError) {
+                            System.out.println(name + "," + m.getKey() + "," + amount + "," + "oom");
+                        } else {
+                            throwable.printStackTrace();
+                        }
+                        skip.set(true);
+                    });
+                    thread.start();
+                    var target = 60 * 60 * 1000;
+                    while (target > 0 && thread.isAlive()) {
+                        var before = System.currentTimeMillis();
                         try {
-                            thread.join();
+                            thread.join(target);
                         } catch (InterruptedException ignored) {
                         }
+                        if (skip.get()) {
+                            continue structures;
+                        }
+                        var slept = System.currentTimeMillis() - before;
+                        target -= slept;
                     }
-                    continue structures;
+                    if (thread.isAlive()) {
+                        System.out.println(name + "," + m.getKey() + "," + amount + "," + "oot");
+                        thread.interrupt();
+                        while (thread.isAlive()) {
+                            try {
+                                thread.join();
+                            } catch (InterruptedException ignored) {
+                            }
+                        }
+                        continue structures;
+                    }
+                    var layout = GraphLayout.parseInstance(finish.apply(map));
+                    System.out.println(name + "," + m.getKey() + "," + amount + "," + layout.totalSize());
                 }
-                var layout = GraphLayout.parseInstance(finish.apply(map));
-                System.out.println(name + "," + m.getKey() + "," + amount + "," + layout.totalSize());
+            } catch (OutOfMemoryError e) {
+                System.out.println(name + "," + m.getKey() + "," + "???" + "," + "oom");
             }
         }
     }
