@@ -23,7 +23,7 @@ public class BenchmarkLinearGet_${structure.name} {
     int size = 0;
 
     ${structure.type} map;
-    int[] is = new int[100];
+    int[] is = new int[1000];
 
     @Setup
     public void setup() {

@@ -29,8 +29,8 @@ public class BenchmarkGet_${structure.name} {
 
     HashSet< Integer> set;
 
-    int[] is = new int[100];
-    int[] nis = new int[100];
+    int[] is = new int[1000];
+    int[] nis = new int[1000];
 
     @Setup
     public void setup() {
