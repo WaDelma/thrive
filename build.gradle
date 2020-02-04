@@ -215,7 +215,7 @@ tasks {
                             },
                             {
                                 type: 'TreeMap<Integer, Integer>'
-                                creator: 'TreeMap\$.MODULE\$.empty(scala.math.Ordering.comparatorToOrdering(java.util.Comparator.<Integer>naturalOrder()))'
+                                creator: 'TreeMap\$.MODULE\$.empty((scala.math.Ordering<Integer>) (Object) scala.math.Ordering.Int\$.MODULE\$)'
                                 path: 'scala.collection.immutable.*'
                                 insert: 'updated'
                                 name: 'ScalaTreeMap'
@@ -223,7 +223,7 @@ tasks {
                                 get: 'get'
                             },
                             {
-                                type: 'IntMap<Integer>'
+                                type: 'scala.collection.immutable.IntMap<Integer>'
                                 creator: 'IntMap\$.MODULE\$.empty()'
                                 path: 'scala.collection.immutable.*'
                                 insert: 'updated'
