@@ -20,7 +20,8 @@ class PersistenceTest(val intMap: () -> IntMap<String>, val desc: String) {
             arrayOf<Any>({ Trie2j64<String>() }, "Trie2j64"),
             arrayOf<Any>({ Trie2j16<String>() }, "Trie2j16"),
             arrayOf<Any>({ Trie3<String>() }, "Trie3"),
-            arrayOf<Any>({ Trie3j<String>() }, "Trie3j")
+            arrayOf<Any>({ Trie3j<String>() }, "Trie3j"),
+            arrayOf<Any>({ RadixTree<String>() }, "RadixTree")
         )
     }
 
@@ -59,7 +60,7 @@ class PersistenceTest(val intMap: () -> IntMap<String>, val desc: String) {
     fun `adding values with random keys doesn't affect previous version`() {
         var map = intMap()
         Random(13).let { rand ->
-            generateSequence { rand.nextInt() }
+            generateSequence { rand.nextInt(1000000) }
                 .distinct()
                 .take(1000)
                 .forEachIndexed { n, key ->

@@ -178,6 +178,15 @@ tasks {
                                 get: 'get'
                             },
                             {
+                                type: 'RadixTree<Integer>'
+                                creator: 'new RadixTree<Integer>()'
+                                path: 'thrive.RadixTree'
+                                insert: 'insert'
+                                name: 'RadixTree'
+                                iterator: 'entries'
+                                get: 'get'
+                            },
+                            {
                                 type: 'PersistentHashMap<Integer, Integer>'
                                 creator: 'PersistentHashMap.empty()'
                                 path: 'org.organicdesign.fp.collections.PersistentHashMap'

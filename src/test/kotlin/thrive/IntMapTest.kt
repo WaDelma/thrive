@@ -25,7 +25,8 @@ class IntMapTest(val intMap: () -> IntMap<String>, val desc: String) {
             arrayOf<Any>({ ArrayMap<String>() }, "ArrayMap"),
             arrayOf<Any>({ RrbMap<String>() }, "RrbMap"),
             arrayOf<Any>({ ClojureRrbMap<String>() }, "ClojureRrbMap"),
-            arrayOf<Any>({ ScalaRrbMap<String>() }, "ScalaRrbMap")
+            arrayOf<Any>({ ScalaRrbMap<String>() }, "ScalaRrbMap"),
+            arrayOf<Any>({ RadixTree<String>() }, "RadixTree")
         )
     }
 
@@ -36,15 +37,14 @@ class IntMapTest(val intMap: () -> IntMap<String>, val desc: String) {
     }
 
     @Test
-    fun `adding value for keys from 0 to 31 works`() {
+    fun `adding two values with same remainder under modulus 32`() {
         var map = intMap()
-        (0..31).forEach {
-            map = map.insert(it, "v$it")
-            assertEquals("v$it", map.get(it))
-        }
-        (0..31).forEach {
-            assertEquals("v$it", map.get(it))
-        }
+        val x = 4;
+        map = map.insert(x, "v$x")
+        val y = 32 + x
+        map = map.insert(y, "v$y")
+        assertEquals("v$x", map.get(x))
+        assertEquals("v$y", map.get(y))
     }
 
     @Test
@@ -55,6 +55,18 @@ class IntMapTest(val intMap: () -> IntMap<String>, val desc: String) {
             assertEquals("v$it", map.get(it))
         }
         (0..32).forEach {
+            assertEquals("v$it", map.get(it))
+        }
+    }
+
+    @Test
+    fun `adding value for keys from 0 to 31 works`() {
+        var map = intMap()
+        (0..31).forEach {
+            map = map.insert(it, "v$it")
+            assertEquals("v$it", map.get(it))
+        }
+        (0..31).forEach {
             assertEquals("v$it", map.get(it))
         }
     }
@@ -110,7 +122,7 @@ class IntMapTest(val intMap: () -> IntMap<String>, val desc: String) {
     fun `getting non-existent keys work`() {
         var map = intMap()
         val rand = Random(77)
-        val missing = generateSequence { rand.nextInt(1000000) }.distinct().take(100).toSet()
+        val missing = generateSequence { rand.nextInt(1000000) }.distinct().take(1000).toSet()
         val added = generateSequence { rand.nextInt(1000000) }.distinct().filter { it !in missing }.take(200).toList()
         added.forEach {
             map = map.insert(it, "v$it")

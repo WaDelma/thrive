@@ -24,7 +24,8 @@ class IntMapIterationTest(val intMap: () -> IntMap<String>, val desc: String) {
             arrayOf<Any>({ ArrayMap<String>() }, "ArrayMap"),
             arrayOf<Any>({ RrbMap<String>() }, "RrbMap"),
             arrayOf<Any>({ ClojureRrbMap<String>() }, "ClojureRrbMap"),
-            arrayOf<Any>({ ScalaRrbMap<String>() }, "ScalaRrbMap")
+            arrayOf<Any>({ ScalaRrbMap<String>() }, "ScalaRrbMap"),
+            arrayOf<Any>({ RadixTree<String>() }, "RadixTree")
         )
     }
 
@@ -103,10 +104,8 @@ class IntMapIterationTest(val intMap: () -> IntMap<String>, val desc: String) {
     fun `Iterating lots of values works`() {
         var map = intMap()
         val rand = Random(42)
-        val added = generateSequence { rand.nextInt(1000000) }.take(10000).toHashSet()
-        val expect = hashSetOf<Int>()
+        val added = generateSequence { rand.nextInt(1000000) }.distinct().take(10000).toHashSet()
         added.forEachIndexed { i, key ->
-            expect.add(i)
             map = map.insert(key, "v$key $i")
         }
         map.entries().forEachRemaining { (k, v) ->

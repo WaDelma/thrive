@@ -88,6 +88,7 @@ public class Mem {
         this.put("Trie2j64", () -> fromPersistentIntMap(new Trie2j64<>()));
         this.put("Trie2j16", () -> fromPersistentIntMap(new Trie2j16<>()));
         this.put("Trie3", () -> fromPersistentIntMap(new Trie3<>()));
+        this.put("RadixTree", () -> fromPersistentIntMap(new RadixTree<>()));
         this.put("PaguroRrbMap", () -> fromPersistentIntMap(new RrbMap<>()));
         this.put("PaguroHashMap", () -> unify(PersistentHashMap.<Integer, Integer>empty(), (m, k, v) -> m.val = m.val.assoc(k, v), Holder::getVal, (m, k) -> m.val.containsKey(k)));
         this.put("PaguroTreeMap", () -> unify(PersistentTreeMap.<Integer, Integer>empty(), (m, k, v) -> m.val = m.val.assoc(k, v), Holder::getVal, (m, k) -> m.val.containsKey(k)));
