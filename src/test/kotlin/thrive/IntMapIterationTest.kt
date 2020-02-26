@@ -25,7 +25,8 @@ class IntMapIterationTest(val intMap: () -> IntMap<String>, val desc: String) {
             arrayOf<Any>({ RrbMap<String>() }, "RrbMap"),
             arrayOf<Any>({ ClojureRrbMap<String>() }, "ClojureRrbMap"),
             arrayOf<Any>({ ScalaRrbMap<String>() }, "ScalaRrbMap"),
-            arrayOf<Any>({ RadixTree<String>() }, "RadixTree")
+            arrayOf<Any>({ RadixBalancedTree<String>() }, "RadixBalancedTree"),
+            arrayOf<Any>({ RadixBalancedTreeRedux<String>() }, "RadixBalancedTreeRedux")
         )
     }
 

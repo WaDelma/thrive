@@ -11,26 +11,26 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class RadixTree<T> implements IntMap<T> {
+public class RadixBalancedTreeRedux<T> implements IntMap<T> {
     private Node root;
     private int height;
     private int capacity;
     private int size;
 
-    private RadixTree(RadixTree<T> tree){
+    private RadixBalancedTreeRedux(RadixBalancedTreeRedux<T> tree){
         root = tree.root;
         height = tree.height;
         size = tree.size;
         capacity = tree.capacity;
     }
-    public RadixTree(){
-        root = new RadixNode(new Object[FACTOR]);
+    public RadixBalancedTreeRedux(){
+        root = new RadixNode(new Object[1]);
     }
 
     @NotNull
     @Override
-    public IntMap<T> insert(int key, T value) {
-        var cur = new RadixTree<>(this);
+    public RadixBalancedTreeRedux<T> insert(int key, T value) {
+        var cur = new RadixBalancedTreeRedux<>(this);
         for (int i = capacity; i <= key; i++) {
             cur = cur.append(null);
         }
@@ -49,10 +49,10 @@ public class RadixTree<T> implements IntMap<T> {
         return (T) root.get(key, height);
     }
 
-    private RadixTree<T> append(Object elem) {
-        var tree = new RadixTree<>(this);
+    private RadixBalancedTreeRedux<T> append(Object elem) {
+        var tree = new RadixBalancedTreeRedux<>(this);
         if (needNewRoot()) {
-            var ch = new Object[FACTOR];
+            var ch = new Object[2];
             ch[0] = root;
             ch[1] = newBranch(elem, height);
             tree.height += 1;
@@ -66,11 +66,11 @@ public class RadixTree<T> implements IntMap<T> {
     }
 
     private boolean needNewRoot() {
-        return capacity == 1 << (BITS * (height + 1));
+        return capacity == 1 << (BITS * (height + 1) + 1);
     }
 
     private Node newBranch(Object elem, int level) {
-        var newNode = new RadixNode(new Object[FACTOR]);
+        var newNode = new RadixNode(new Object[1]);
         if (level == 0) {
             newNode.children[0] = elem;
         } else {
@@ -135,6 +135,7 @@ public class RadixTree<T> implements IntMap<T> {
     private static int FACTOR = 32;
     private static int BITS = (int)(Math.log(FACTOR) / Math.log(2));
     private static int MASK = (1 << BITS) - 1;
+    private static int BOTTOM_MASK = (1 << (BITS + 1)) - 1;
 
     interface Node {
         Object get(int key, int level);
@@ -153,10 +154,14 @@ public class RadixTree<T> implements IntMap<T> {
         @Override
         public Object get(int key, int level) {
             if (level == 0) {
-                return children[key & MASK];
+                var idx = key & BOTTOM_MASK;
+                if (idx >= children.length) {
+                    return null;
+                }
+                return children[idx];
             }
-            var idx = (key >> (level * BITS)) & MASK;
-            if (children[idx] == null) {
+            var idx = (key >> (level * BITS + 1)) & MASK;
+            if (idx >= children.length || children[idx] == null) {
                 return null;
             }
             return ((Node) children[idx]).get(key, level - 1);
@@ -164,13 +169,14 @@ public class RadixTree<T> implements IntMap<T> {
 
         @Override
         public Pair<Node, Boolean> updated(int key, Object value, int level) {
-            var idx = (key >> (level * BITS)) & MASK;
             var arr = Arrays.copyOf(children, children.length);
             boolean added;
             if (level == 0) {
+                var idx = key & BOTTOM_MASK;
                 added = arr[idx] == null;
                 arr[idx] = value;
             } else {
+                var idx = (key >> (level * BITS + 1)) & MASK;
                 if (children[idx] == null) {
                     added = true;
                     var newNode = new RadixNode(new Object[FACTOR]);
@@ -188,12 +194,12 @@ public class RadixTree<T> implements IntMap<T> {
         }
 
         public Node appended(Object elem, int level, int end) {
-            var indexInNode = (end >> (level * BITS)) & MASK;
             if (level == 0) {
-                return copyAndUpdate(indexInNode, elem);
+                return copyAndUpdate(end & BOTTOM_MASK, elem);
             } else {
-                if (children[indexInNode] == null) {
-                    var newNode = new RadixNode(new Object[FACTOR]);
+                var indexInNode = (end >> (level * BITS + 1)) & MASK;
+                if (indexInNode >= children.length || children[indexInNode] == null) {
+                    var newNode = new RadixNode(new Object[1]);
                     newNode.children[0] = elem;
                     return copyAndUpdate(
                         indexInNode,
@@ -206,6 +212,12 @@ public class RadixTree<T> implements IntMap<T> {
                     );
                 }
             }
+        }
+
+        private Node copyAndUpdate(int indexInNode, Object elem) {
+            var arr = Arrays.copyOf(children, indexInNode + 1);
+            arr[indexInNode] = elem;
+            return new RadixNode(arr);
         }
 
         @Override
@@ -239,6 +251,8 @@ public class RadixTree<T> implements IntMap<T> {
                                 empty = 0;
                                 ((Node) child).debug(level + 1);
                             }
+                        } else {
+                            System.out.println(pad + "  null");
                         }
                     }
                     if (empty > 0) {
@@ -270,12 +284,6 @@ public class RadixTree<T> implements IntMap<T> {
             } else {
                 System.out.println(pad + "Rnull(" + (FACTOR - level) + ")");
             }
-        }
-
-        private Node copyAndUpdate(int indexInNode, Object elem) {
-            var arr = Arrays.copyOf(children, children.length);
-            arr[indexInNode] = elem;
-            return new RadixNode(arr);
         }
 
     }

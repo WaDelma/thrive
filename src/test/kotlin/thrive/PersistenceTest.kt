@@ -21,7 +21,8 @@ class PersistenceTest(val intMap: () -> IntMap<String>, val desc: String) {
             arrayOf<Any>({ Trie2j16<String>() }, "Trie2j16"),
             arrayOf<Any>({ Trie3<String>() }, "Trie3"),
             arrayOf<Any>({ Trie3j<String>() }, "Trie3j"),
-            arrayOf<Any>({ RadixTree<String>() }, "RadixTree")
+            arrayOf<Any>({ RadixBalancedTree<String>() }, "RadixBalancedTree"),
+            arrayOf<Any>({ RadixBalancedTreeRedux<String>() }, "RadixBalancedTreeRedux")
         )
     }
 

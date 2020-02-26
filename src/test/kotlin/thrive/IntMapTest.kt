@@ -26,7 +26,8 @@ class IntMapTest(val intMap: () -> IntMap<String>, val desc: String) {
             arrayOf<Any>({ RrbMap<String>() }, "RrbMap"),
             arrayOf<Any>({ ClojureRrbMap<String>() }, "ClojureRrbMap"),
             arrayOf<Any>({ ScalaRrbMap<String>() }, "ScalaRrbMap"),
-            arrayOf<Any>({ RadixTree<String>() }, "RadixTree")
+            arrayOf<Any>({ RadixBalancedTree<String>() }, "RadixBalancedTree"),
+            arrayOf<Any>({ RadixBalancedTreeRedux<String>() }, "RadixBalancedTreeRedux")
         )
     }
 
@@ -94,10 +95,32 @@ class IntMapTest(val intMap: () -> IntMap<String>, val desc: String) {
     }
 
     @Test
-    fun `adding value for keys from 0 to 127 in random permutation works`() {
+    fun `adding value for keys from 0 to 127 works`() {
         var map = intMap()
-        val keys = (0..127).toList().shuffled(Random(42))
         (0..127).forEach {
+            map = map.insert(it, "v$it")
+            (0..it).reversed().forEach {
+                assertEquals("v$it", map.get(it))
+            }
+        }
+    }
+
+    @Test
+    fun `adding value for keys from 127 to 0 works`() {
+        var map = intMap()
+        (0..127).reversed().forEach {
+            map = map.insert(it, "v$it")
+            (it..127).forEach {
+                assertEquals("v$it", map.get(it))
+            }
+        }
+    }
+
+    @Test
+    fun `adding value for keys from 0 to 255 in random permutation works`() {
+        var map = intMap()
+        val keys = (0..255).toList().shuffled(Random(42))
+        (0..255).forEach {
             map = map.insert(keys[it], "v${keys[it]}_$it")
             (0..it).reversed().forEach {
                 assertEquals("v${keys[it]}_$it", map.get(keys[it]))
