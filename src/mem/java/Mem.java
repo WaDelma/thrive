@@ -91,6 +91,7 @@ public class Mem {
         this.put("RadixTree", () -> fromPersistentIntMap(new RadixBalancedTree<>()));
         this.put("RadixTree", () -> fromPersistentIntMap(new RadixBalancedTreeRedux<>()));
         this.put("PaguroRrbMap", () -> fromPersistentIntMap(new RrbMap<>()));
+        this.put("PaguroVectorMap", () -> fromPersistentIntMap(new PersistentVectorMap<>()));
         this.put("PaguroHashMap", () -> unify(PersistentHashMap.<Integer, Integer>empty(), (m, k, v) -> m.val = m.val.assoc(k, v), Holder::getVal, (m, k) -> m.val.containsKey(k)));
         this.put("PaguroTreeMap", () -> unify(PersistentTreeMap.<Integer, Integer>empty(), (m, k, v) -> m.val = m.val.assoc(k, v), Holder::getVal, (m, k) -> m.val.containsKey(k)));
         this.put("ScalaRrbMap", () -> fromPersistentIntMap(new ScalaRrbMap<>()));

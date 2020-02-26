@@ -2,9 +2,9 @@ package thrive;
 
 import kotlin.Pair;
 import org.jetbrains.annotations.NotNull;
+import scala.collection.immutable.AbstractSeq;
 import scala.collection.immutable.Vector;
 import scala.collection.immutable.Vector$;
-import scala.collection.immutable.VectorIterator;
 
 import java.util.Iterator;
 
@@ -20,16 +20,13 @@ public class ScalaRrbMap<T> implements IntMap<T> {
     @NotNull
     public ScalaRrbMap<T> insert(int key, T value) {
         if (key == tree.size()) {
-            return new ScalaRrbMap<>(tree.appendBack(value), size + 1);
+            return new ScalaRrbMap<>((Vector<T>)((AbstractSeq<T>)tree).appended(value), size + 1);
         }
         if (key < tree.size()) {
             return new ScalaRrbMap<>(tree.updateAt(key, value), tree.apply(key) == null ? size + 1: size);
         }
-        var tree2 = tree;
-        for (int i = 0; i < key - tree.size(); i++) {
-            tree2 = tree2.appendBack(null);
-        }
-        return new ScalaRrbMap<>(tree2.appendBack(value), size + 1);
+        var tree2 = tree.padTo(key, (T)null);
+        return new ScalaRrbMap<>((Vector<T>)((AbstractSeq<T>)tree2).appended(value), size + 1);
     }
 
     @Override
@@ -54,9 +51,9 @@ public class ScalaRrbMap<T> implements IntMap<T> {
         private int index = 0;
         private int found = 0;
         private int length;
-        private VectorIterator<T> iter;
+        private scala.collection.Iterator<T> iter;
 
-        private Iter(VectorIterator<T> iter, int length) {
+        private Iter(scala.collection.Iterator<T> iter, int length) {
             this.iter = iter;
             this.length = length;
         }

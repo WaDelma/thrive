@@ -277,6 +277,15 @@ tasks {
                                 get: 'get'
                             },
                             {
+                                type: 'PersistentVectorMap<Integer>'
+                                creator: 'new PersistentVectorMap<Integer>()'
+                                path: 'thrive.PersistentVectorMap'
+                                insert: 'insert'
+                                name: 'PaguroVectorMap'
+                                iterator: 'entries'
+                                get: 'get'
+                            },
+                            {
                                 type: 'ScalaRrbMap<Integer>'
                                 creator: 'new ScalaRrbMap<Integer>()'
                                 path: 'thrive.ScalaRrbMap'

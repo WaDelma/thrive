@@ -2,32 +2,33 @@ package thrive;
 
 import kotlin.Pair;
 import org.jetbrains.annotations.NotNull;
+import org.organicdesign.fp.collections.PersistentVector;
 import org.organicdesign.fp.collections.RrbTree;
 
 import java.util.Iterator;
 
-public class RrbMap<T> implements IntMap<T> {
-    private RrbTree.ImRrbt<T> tree;
+public class PersistentVectorMap<T> implements IntMap<T> {
+    private PersistentVector<T> tree;
     private int size = 0;
 
-    public RrbMap() { tree = RrbTree.empty(); }
+    public PersistentVectorMap() { tree = PersistentVector.empty(); }
 
-    private RrbMap(RrbTree.ImRrbt<T> tree, int size) { this.tree = tree; this.size = size; }
+    private PersistentVectorMap(PersistentVector<T> tree, int size) { this.tree = tree; this.size = size; }
 
     @Override
     @NotNull
-    public RrbMap<T> insert(int key, T value) {
+    public PersistentVectorMap<T> insert(int key, T value) {
         if (key == tree.size()) {
-            return new RrbMap<>(tree.append(value), size + 1);
+            return new PersistentVectorMap<>(tree.append(value), size + 1);
         }
         if (key < tree.size()) {
-            return new RrbMap<>(tree.replace(key, value), tree.get(key) == null ? size + 1: size);
+            return new PersistentVectorMap<>(tree.replace(key, value), tree.get(key) == null ? size + 1: size);
         }
-        var tree2 = tree.mutable()
+        var tree2 = (PersistentVector<T>) tree.mutable()
                 .concat(() -> new Nulls<>(key - tree.size()))
                 .append(value)
                 .immutable();
-        return new RrbMap<>(tree2, size + 1);
+        return new PersistentVectorMap<>(tree2, size + 1);
     }
 
     @Override
@@ -71,5 +72,4 @@ public class RrbMap<T> implements IntMap<T> {
             return new Pair<>(i, result);
         }
     }
-
 }
