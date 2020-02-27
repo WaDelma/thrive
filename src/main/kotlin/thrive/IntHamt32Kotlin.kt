@@ -4,7 +4,7 @@ import java.util.*
 
 private const val BITS: Int = 5
 
-class Trie2<T> : IntMap<T> {
+class IntHamt32Kotlin<T> : IntMap<T> {
     private val root: Node2<T>?
 
     constructor() {
@@ -15,11 +15,11 @@ class Trie2<T> : IntMap<T> {
         this.root = node
     }
 
-    override fun insert(key: Int, value: T): Trie2<T> {
+    override fun insert(key: Int, value: T): IntHamt32Kotlin<T> {
         val pos = 1 shl mask(key, 0, BITS)
         return when (root) {
-            null -> Trie2(Leaf(pos, intArrayOf(key), arrayOf(value as Any)))
-            else -> Trie2(root.insert(key, value, 0))
+            null -> IntHamt32Kotlin(Leaf(pos, intArrayOf(key), arrayOf(value as Any)))
+            else -> IntHamt32Kotlin(root.insert(key, value, 0))
         }
     }
 

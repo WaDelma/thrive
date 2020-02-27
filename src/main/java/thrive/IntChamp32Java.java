@@ -11,27 +11,27 @@ import java.util.stream.Stream;
 import static thrive.TrieUtils.*;
 
 
-public final class Trie1j<T> implements IntMap<T> {
+public final class IntChamp32Java<T> implements IntMap<T> {
     private static final int BITS = 5;
 
     private Node<T> root;
 
-    public Trie1j() {
+    public IntChamp32Java() {
         this.root = null;
     }
 
-    private Trie1j(Node<T> node) {
+    private IntChamp32Java(Node<T> node) {
         this.root = node;
     }
 
     @NotNull
     @Override
-    public Trie1j<T> insert(int key, T value) {
+    public IntChamp32Java<T> insert(int key, T value) {
         var pos = 1 << mask(key, 0, BITS);
         if (root == null) {
-            return new Trie1j<>(new Node<>(0, pos, new Object[]{key, value}));
+            return new IntChamp32Java<>(new Node<>(0, pos, new Object[]{key, value}));
         }
-        return new Trie1j<>(root.insert(key, value, 0));
+        return new IntChamp32Java<>(root.insert(key, value, 0));
     }
 
     @Override

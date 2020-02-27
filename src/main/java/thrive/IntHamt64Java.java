@@ -11,27 +11,27 @@ import java.util.stream.Stream;
 
 import static thrive.TrieUtils.*;
 
-public final class Trie2j64<T> implements IntMap<T> {
+public final class IntHamt64Java<T> implements IntMap<T> {
     private static final int BITS = 6;
 
     private Node<T> root;
 
-    public Trie2j64() {
+    public IntHamt64Java() {
         root = null;
     }
 
-    private Trie2j64(Node<T> root) {
+    private IntHamt64Java(Node<T> root) {
         this.root = root;
     }
 
     @NotNull
     @Override
-    public Trie2j64<T> insert(int key, T value) {
+    public IntHamt64Java<T> insert(int key, T value) {
         var pos = 1 << mask(key, 0, BITS);
         if (root != null) {
-            return new Trie2j64<>(root.insert(key, value, 0));
+            return new IntHamt64Java<>(root.insert(key, value, 0));
         } else {
-            return new Trie2j64<>(new Leaf<>(pos, new int[]{key}, new Object[]{value}));
+            return new IntHamt64Java<>(new Leaf<>(pos, new int[]{key}, new Object[]{value}));
         }
     }
 

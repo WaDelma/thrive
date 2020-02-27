@@ -5,7 +5,7 @@ import java.util.ArrayList
 // TODO: Benchmark the effects of changing this
 private const val BITS: Int = 5
 
-class Trie1<T> : IntMap<T> {
+class IntChamp32Kotlin<T> : IntMap<T> {
     private val root: Node<T>?
 
     constructor() {
@@ -16,11 +16,11 @@ class Trie1<T> : IntMap<T> {
         this.root = node
     }
 
-    override fun insert(key: Int, value: T): Trie1<T> {
+    override fun insert(key: Int, value: T): IntChamp32Kotlin<T> {
         val pos = 1 shl mask(key, 0, BITS)
         return when (root) {
-            null -> Trie1(Node(0, pos, arrayOf(key, value as Any)))
-            else -> Trie1(root.insert(key, value, 0))
+            null -> IntChamp32Kotlin(Node(0, pos, arrayOf(key, value as Any)))
+            else -> IntChamp32Kotlin(root.insert(key, value, 0))
         }
     }
 

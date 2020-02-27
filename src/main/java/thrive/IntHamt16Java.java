@@ -3,33 +3,35 @@ package thrive;
 import kotlin.Pair;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static thrive.TrieUtils.*;
 
-public final class Trie2j<T> implements IntMap<T> {
-    private static final int BITS = 5;
+public final class IntHamt16Java<T> implements IntMap<T> {
+    private static final int BITS = 4;
 
     private Node<T> root;
 
-    public Trie2j() {
+    public IntHamt16Java() {
         root = null;
     }
 
-    private Trie2j(Node<T> root) {
+    private IntHamt16Java(Node<T> root) {
         this.root = root;
     }
 
     @NotNull
     @Override
-    public Trie2j<T> insert(int key, T value) {
+    public IntHamt16Java<T> insert(int key, T value) {
         var pos = 1 << mask(key, 0, BITS);
         if (root != null) {
-            return new Trie2j<>(root.insert(key, value, 0));
+            return new IntHamt16Java<>(root.insert(key, value, 0));
         } else {
-            return new Trie2j<>(new Leaf<>(pos, new int[]{key}, new Object[]{value}));
+            return new IntHamt16Java<>(new Leaf<>(pos, new int[]{key}, new Object[]{value}));
         }
     }
 

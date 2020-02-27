@@ -80,14 +80,14 @@ public class Mem {
     }
 
     private static final HashMap<String, Supplier<Map>> structures = new HashMap<>() {{
-        this.put("Trie1", () -> fromPersistentIntMap(new Trie1<>()));
-        this.put("Trie1j", () -> fromPersistentIntMap(new Trie1j<>()));
-        this.put("Trie1j64", () -> fromPersistentIntMap(new Trie1j64<>()));
-        this.put("Trie2", () -> fromPersistentIntMap(new Trie2<>()));
-        this.put("Trie2j", () -> fromPersistentIntMap(new Trie2j<>()));
-        this.put("Trie2j64", () -> fromPersistentIntMap(new Trie2j64<>()));
-        this.put("Trie2j16", () -> fromPersistentIntMap(new Trie2j16<>()));
-        this.put("Trie3", () -> fromPersistentIntMap(new Trie3<>()));
+        this.put("IntChamp32Kotlin", () -> fromPersistentIntMap(new IntChamp32Kotlin<>()));
+        this.put("IntChamp32Java", () -> fromPersistentIntMap(new IntChamp32Java<>()));
+        this.put("IntChamp64Java", () -> fromPersistentIntMap(new IntChamp64Java<>()));
+        this.put("IntHamt32Kotlin", () -> fromPersistentIntMap(new IntHamt32Kotlin<>()));
+        this.put("IntHamt32Java", () -> fromPersistentIntMap(new IntHamt32Java<>()));
+        this.put("IntHamt64Java", () -> fromPersistentIntMap(new IntHamt64Java<>()));
+        this.put("IntHamt16Java", () -> fromPersistentIntMap(new IntHamt16Java<>()));
+        this.put("IntImplicitKeyHamtKotlin", () -> fromPersistentIntMap(new IntImplicitKeyHamtKotlin<>()));
         this.put("RadixTree", () -> fromPersistentIntMap(new RadixBalancedTree<>()));
         this.put("RadixTree", () -> fromPersistentIntMap(new RadixBalancedTreeRedux<>()));
         this.put("PaguroRrbMap", () -> fromPersistentIntMap(new RrbMap<>()));

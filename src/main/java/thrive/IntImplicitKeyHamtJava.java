@@ -11,26 +11,26 @@ import java.util.stream.Stream;
 
 import static thrive.TrieUtils.*;
 
-public class Trie3j<T> implements IntMap<T> {
+public class IntImplicitKeyHamtJava<T> implements IntMap<T> {
     private static final int BITS = 5;
 
     private Node3j<T> root;
 
-    public Trie3j() {
+    public IntImplicitKeyHamtJava() {
         root = null;
     }
 
-    private Trie3j(Node3j<T> node) {
+    private IntImplicitKeyHamtJava(Node3j<T> node) {
         this.root = node;
     }
 
     @NotNull
     @Override
-    public Trie3j<T> insert(int key, T value) {
+    public IntImplicitKeyHamtJava<T> insert(int key, T value) {
         if (root == null) {
-            return new Trie3j<>(new Trunk3<T>(0, new Object[] {}).insert(key, value, 0));
+            return new IntImplicitKeyHamtJava<>(new Trunk3<T>(0, new Object[] {}).insert(key, value, 0));
         }
-        return new Trie3j<>(root.insert(key, value, 0));
+        return new IntImplicitKeyHamtJava<>(root.insert(key, value, 0));
     }
 
     @Override

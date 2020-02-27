@@ -11,27 +11,27 @@ import java.util.stream.Stream;
 import static thrive.TrieUtils.*;
 
 
-public final class Trie1j64<T> implements IntMap<T> {
+public final class IntChamp64Java<T> implements IntMap<T> {
     private static final int BITS = 6;
 
     private Node<T> root;
 
-    public Trie1j64() {
+    public IntChamp64Java() {
         this.root = null;
     }
 
-    private Trie1j64(Node<T> node) {
+    private IntChamp64Java(Node<T> node) {
         this.root = node;
     }
 
     @NotNull
     @Override
-    public Trie1j64<T> insert(int key, T value) {
+    public IntChamp64Java<T> insert(int key, T value) {
         var pos = 1 << mask(key, 0, BITS);
         if (root == null) {
-            return new Trie1j64<>(new Node<>(0, pos, new Object[]{key, value}));
+            return new IntChamp64Java<>(new Node<>(0, pos, new Object[]{key, value}));
         }
-        return new Trie1j64<>(root.insert(key, value, 0));
+        return new IntChamp64Java<>(root.insert(key, value, 0));
     }
 
     @Override

@@ -86,6 +86,11 @@ tasks {
     }
     test {
         maxHeapSize = "12G"
+        testLogging {
+            exceptionFormat "full"
+            events "started", "skipped", "passed", "failed"
+            showStandardStreams true
+        }
     }
     compileKotlin {
         kotlinOptions.jvmTarget = "1.8"
@@ -106,74 +111,74 @@ tasks {
                     data: """
                         STRUCTURES: [
                             {
-                                type: 'Trie1<Integer>'
-                                creator: 'new Trie1<Integer>()'
-                                path: 'thrive.Trie1'
+                                type: 'IntChamp32Kotlin<Integer>'
+                                creator: 'new IntChamp32Kotlin<Integer>()'
+                                path: 'thrive.IntChamp32Kotlin'
                                 insert: 'insert'
-                                name: 'Trie1'
+                                name: 'IntChamp32Kotlin'
                                 iterator: 'entries'
                                 get: 'get'
                             },
                             {
-                                type: 'Trie1j<Integer>'
-                                creator: 'new Trie1j<Integer>()'
-                                path: 'thrive.Trie1j'
+                                type: 'IntChamp32Java<Integer>'
+                                creator: 'new IntChamp32Java<Integer>()'
+                                path: 'thrive.IntChamp32Java'
                                 insert: 'insert'
-                                name: 'Trie1j'
+                                name: 'IntChamp32Java'
                                 iterator: 'entries'
                                 get: 'get'
                             },
                             {
-                                type: 'Trie1j64<Integer>'
-                                creator: 'new Trie1j64<Integer>()'
-                                path: 'thrive.Trie1j64'
+                                type: 'IntChamp64Java<Integer>'
+                                creator: 'new IntChamp64Java<Integer>()'
+                                path: 'thrive.IntChamp64Java'
                                 insert: 'insert'
-                                name: 'Trie1j64'
+                                name: 'IntChamp64Java'
                                 iterator: 'entries'
                                 get: 'get'
                             },
                             {
-                                type: 'Trie2<Integer>'
-                                creator: 'new Trie2<Integer>()'
-                                path: 'thrive.Trie2'
+                                type: 'IntHamt32Kotlin<Integer>'
+                                creator: 'new IntHamt32Kotlin<Integer>()'
+                                path: 'thrive.IntHamt32Kotlin'
                                 insert: 'insert'
-                                name: 'Trie2'
+                                name: 'IntHamt32Kotlin'
                                 iterator: 'entries'
                                 get: 'get'
                             },
                             {
-                                type: 'Trie2j<Integer>'
-                                creator: 'new Trie2j<Integer>()'
-                                path: 'thrive.Trie2j'
+                                type: 'IntHamt32Java<Integer>'
+                                creator: 'new IntHamt32Java<Integer>()'
+                                path: 'thrive.IntHamt32Java'
                                 insert: 'insert'
-                                name: 'Trie2j'
+                                name: 'IntHamt32Java'
                                 iterator: 'entries'
                                 get: 'get'
                             },
                             {
-                                type: 'Trie2j64<Integer>'
-                                creator: 'new Trie2j64<Integer>()'
-                                path: 'thrive.Trie2j64'
+                                type: 'IntHamt64Java<Integer>'
+                                creator: 'new IntHamt64Java<Integer>()'
+                                path: 'thrive.IntHamt64Java'
                                 insert: 'insert'
-                                name: 'Trie2j64'
+                                name: 'IntHamt64Java'
                                 iterator: 'entries'
                                 get: 'get'
                             },
                             {
-                                type: 'Trie2j16<Integer>'
-                                creator: 'new Trie2j16<Integer>()'
-                                path: 'thrive.Trie2j16'
+                                type: 'IntHamt16Java<Integer>'
+                                creator: 'new IntHamt16Java<Integer>()'
+                                path: 'thrive.IntHamt16Java'
                                 insert: 'insert'
-                                name: 'Trie2j16'
+                                name: 'IntHamt16Java'
                                 iterator: 'entries'
                                 get: 'get'
                             },
                             {
-                                type: 'Trie3<Integer>'
-                                creator: 'new Trie3<Integer>()'
-                                path: 'thrive.Trie3'
+                                type: 'IntImplicitKeyHamtKotlin<Integer>'
+                                creator: 'new IntImplicitKeyHamtKotlin<Integer>()'
+                                path: 'thrive.IntImplicitKeyHamtKotlin'
                                 insert: 'insert'
-                                name: 'Trie3'
+                                name: 'IntImplicitKeyHamtKotlin'
                                 iterator: 'entries'
                                 get: 'get'
                             },

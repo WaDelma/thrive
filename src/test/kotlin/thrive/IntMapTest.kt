@@ -8,26 +8,26 @@ import kotlin.random.Random
 import kotlin.test.assertEquals
 
 @RunWith(Parameterized::class)
-class IntMapTest(val intMap: () -> IntMap<String>, val desc: String) {
+class IntMapTest(val intMap: () -> IntMap<Any>, val desc: String) {
     companion object Params {
         @Parameterized.Parameters(name = " with {1}")
         @JvmStatic
         fun data() = arrayOf(
-            arrayOf<Any>({ Trie1<String>() }, "Trie1"),
-            arrayOf<Any>({ Trie2<String>() }, "Trie2"),
-            arrayOf<Any>({ Trie1j<String>() }, "Trie1j"),
-            arrayOf<Any>({ Trie1j64<String>() }, "Trie1j64"),
-            arrayOf<Any>({ Trie2j<String>() }, "Trie2j"),
-            arrayOf<Any>({ Trie2j64<String>() }, "Trie2j64"),
-            arrayOf<Any>({ Trie2j16<String>() }, "Trie2j16"),
-            arrayOf<Any>({ Trie3<String>() }, "Trie3"),
-            arrayOf<Any>({ Trie3j<String>() }, "Trie3j"),
-            arrayOf<Any>({ ArrayMap<String>() }, "ArrayMap"),
-            arrayOf<Any>({ RrbMap<String>() }, "RrbMap"),
-            arrayOf<Any>({ ClojureRrbMap<String>() }, "ClojureRrbMap"),
-            arrayOf<Any>({ ScalaRrbMap<String>() }, "ScalaRrbMap"),
-            arrayOf<Any>({ RadixBalancedTree<String>() }, "RadixBalancedTree"),
-            arrayOf<Any>({ RadixBalancedTreeRedux<String>() }, "RadixBalancedTreeRedux")
+            arrayOf<Any>({ IntChamp32Kotlin<Any>() }, "IntChamp32Kotlin"),
+            arrayOf<Any>({ IntHamt32Kotlin<Any>() }, "IntHamt32Kotlin"),
+            arrayOf<Any>({ IntChamp32Java<Any>() }, "IntChamp32Java"),
+            arrayOf<Any>({ IntChamp64Java<Any>() }, "IntChamp64Java"),
+            arrayOf<Any>({ IntHamt32Java<Any>() }, "IntHamt32Java"),
+            arrayOf<Any>({ IntHamt64Java<Any>() }, "IntHamt64Java"),
+            arrayOf<Any>({ IntHamt16Java<Any>() }, "IntHamt16Java"),
+            arrayOf<Any>({ IntImplicitKeyHamtKotlin<Any>() }, "IntImplicitKeyHamtKotlin"),
+            arrayOf<Any>({ IntImplicitKeyHamtJava<Any>() }, "IntImplicitKeyHamtJava"),
+            arrayOf<Any>({ ArrayMap<Any>() }, "ArrayMap"),
+            arrayOf<Any>({ RrbMap<Any>() }, "RrbMap"),
+            arrayOf<Any>({ ClojureRrbMap<Any>() }, "ClojureRrbMap"),
+            arrayOf<Any>({ ScalaRrbMap<Any>() }, "ScalaRrbMap"),
+            arrayOf<Any>({ RadixBalancedTree<Any>() }, "RadixBalancedTree"),
+            arrayOf<Any>({ RadixBalancedTreeRedux<Any>() }, "RadixBalancedTreeRedux")
         )
     }
 
@@ -158,8 +158,8 @@ class IntMapTest(val intMap: () -> IntMap<String>, val desc: String) {
     @Test
     @Ignore
     fun `adding huge amount of key value pairs works`() {
-        var map = Trie1<Int>()
-        val amount = Int.MAX_VALUE / 32
+        var map = intMap()
+        val amount = Int.MAX_VALUE / 128
         println("$amount")
         println("INSERT")
         (0..amount).forEach {

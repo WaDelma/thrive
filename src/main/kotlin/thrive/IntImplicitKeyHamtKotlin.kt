@@ -4,7 +4,7 @@ import java.util.*
 
 private const val BITS: Int = 5
 
-class Trie3<T> : IntMap<T> {
+class IntImplicitKeyHamtKotlin<T> : IntMap<T> {
     private val root: Node3<T>?
 
     constructor() {
@@ -15,10 +15,10 @@ class Trie3<T> : IntMap<T> {
         this.root = node
     }
 
-    override fun insert(key: Int, value: T): Trie3<T> {
+    override fun insert(key: Int, value: T): IntImplicitKeyHamtKotlin<T> {
         return when (root) {
-            null -> Trie3(Trunk3<T>(0, arrayOf()).insert(key, value, 0))
-            else -> Trie3(root.insert(key, value, 0))
+            null -> IntImplicitKeyHamtKotlin(Trunk3<T>(0, arrayOf()).insert(key, value, 0))
+            else -> IntImplicitKeyHamtKotlin(root.insert(key, value, 0))
         }
     }
 

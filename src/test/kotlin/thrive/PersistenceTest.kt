@@ -12,15 +12,15 @@ class PersistenceTest(val intMap: () -> IntMap<String>, val desc: String) {
         @Parameterized.Parameters(name = " with {1}")
         @JvmStatic
         fun data() = arrayOf(
-            arrayOf<Any>({ Trie1<String>() }, "Trie1"),
-            arrayOf<Any>({ Trie2<String>() }, "Trie2"),
-            arrayOf<Any>({ Trie1j<String>() }, "Trie1j"),
-            arrayOf<Any>({ Trie1j64<String>() }, "Trie1j64"),
-            arrayOf<Any>({ Trie2j<String>() }, "Trie2j"),
-            arrayOf<Any>({ Trie2j64<String>() }, "Trie2j64"),
-            arrayOf<Any>({ Trie2j16<String>() }, "Trie2j16"),
-            arrayOf<Any>({ Trie3<String>() }, "Trie3"),
-            arrayOf<Any>({ Trie3j<String>() }, "Trie3j"),
+            arrayOf<Any>({ IntChamp32Kotlin<String>() }, "IntChamp32Kotlin"),
+            arrayOf<Any>({ IntHamt32Kotlin<String>() }, "IntHamt32Kotlin"),
+            arrayOf<Any>({ IntChamp32Java<String>() }, "IntChamp32Java"),
+            arrayOf<Any>({ IntChamp64Java<String>() }, "IntChamp64Java"),
+            arrayOf<Any>({ IntHamt32Java<String>() }, "IntHamt32Java"),
+            arrayOf<Any>({ IntHamt64Java<String>() }, "IntHamt64Java"),
+            arrayOf<Any>({ IntHamt16Java<String>() }, "IntHamt16Java"),
+            arrayOf<Any>({ IntImplicitKeyHamtKotlin<String>() }, "IntImplicitKeyHamtKotlin"),
+            arrayOf<Any>({ IntImplicitKeyHamtJava<String>() }, "IntImplicitKeyHamtJava"),
             arrayOf<Any>({ RadixBalancedTree<String>() }, "RadixBalancedTree"),
             arrayOf<Any>({ RadixBalancedTreeRedux<String>() }, "RadixBalancedTreeRedux")
         )
