@@ -98,7 +98,7 @@ public class Mem {
         this.put("ScalaHashMap", () -> unify(scala.collection.immutable.HashMap$.MODULE$.empty(), (m, k, v) -> m.val = m.val.updated(k, v), Holder::getVal, (m, k) -> m.val.contains(k)));
         this.put("ScalaTreeMap", () -> unify(scala.collection.immutable.TreeMap$.MODULE$.empty(Ordering$.MODULE$.comparatorToOrdering(java.util.Comparator.<Integer>naturalOrder())), (m, k, v) -> m.val = m.val.updated(k, v), Holder::getVal, (m, k) -> m.val.contains(k)));
         this.put("ScalaIntMap", () -> unify(scala.collection.immutable.IntMap$.MODULE$.empty(), (m, k, v) -> m.val = m.val.updated((int) k, v), Holder::getVal, (m, k) -> m.val.contains(k)));
-        this.put("ClojureRrbMap", () -> fromPersistentIntMap(new ClojureRrbMap<>()));
+        this.put("ClojureVectorMap", () -> fromPersistentIntMap(new ClojureVectorMap<>()));
         this.put("ClojureHashMap", () -> unify((IPersistentMap) clojure.java.api.Clojure.var("clojure.core", "hash-map").invoke(), (m, k, v) -> m.val = m.val.assoc(k, v), Holder::getVal, (m, k) -> m.val.containsKey(k)));
         this.put("ClojureTreeMap", () -> unify((IPersistentMap) clojure.java.api.Clojure.var("clojure.core", "sorted-map").invoke(), (m, k, v) -> m.val = m.val.assoc(k, v), Holder::getVal, (m, k) -> m.val.containsKey(k)));
         this.put("SdkMap", () -> unify(new HashMap<>(), (m, k, v) -> m.val.put(k, v), m -> new HashMap<>(m.val), (m, k) -> m.val.containsKey(k)));

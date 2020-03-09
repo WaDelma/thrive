@@ -23,7 +23,7 @@ class IntMapIterationTest(val intMap: () -> IntMap<String>, val desc: String) {
             arrayOf<Any>({ IntImplicitKeyHamtJava<String>() }, "IntImplicitKeyHamtJava"),
             arrayOf<Any>({ ArrayMap<String>() }, "ArrayMap"),
             arrayOf<Any>({ RrbMap<String>() }, "RrbMap"),
-            arrayOf<Any>({ ClojureRrbMap<String>() }, "ClojureRrbMap"),
+            arrayOf<Any>({ ClojureVectorMap<String>() }, "ClojureVectorMap"),
             arrayOf<Any>({ ScalaRrbMap<String>() }, "ScalaRrbMap"),
             arrayOf<Any>({ RadixBalancedTree<String>() }, "RadixBalancedTree"),
             arrayOf<Any>({ RadixBalancedTreeRedux<String>() }, "RadixBalancedTreeRedux")

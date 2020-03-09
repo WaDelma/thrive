@@ -300,11 +300,11 @@ tasks {
                                 get: 'get'
                             },
                             {
-                                type: 'ClojureRrbMap<Integer>'
-                                creator: 'new ClojureRrbMap<Integer>()'
-                                path: 'thrive.ClojureRrbMap'
+                                type: 'ClojureVectorMap<Integer>'
+                                creator: 'new ClojureVectorMap<Integer>()'
+                                path: 'thrive.ClojureVectorMap'
                                 insert: 'insert'
-                                name: 'ClojureRrbMap'
+                                name: 'ClojureVectorMap'
                                 iterator: 'entries'
                                 get: 'get'
                             },

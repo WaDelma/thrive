@@ -6,31 +6,31 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
 
-public class ClojureRrbMap<T> implements IntMap<T> {
+public class ClojureVectorMap<T> implements IntMap<T> {
     private IPersistentVector tree;
     private int size = 0;
 
     private static final IFn tra = clojure.java.api.Clojure.var("clojure.core", "transient");
 
-    public ClojureRrbMap() { tree = (IPersistentVector) clojure.java.api.Clojure.var("clojure.core", "vector").invoke(); }
+    public ClojureVectorMap() { tree = (IPersistentVector) clojure.java.api.Clojure.var("clojure.core", "vector").invoke(); }
 
-    private ClojureRrbMap(IPersistentVector tree, int size) { this.tree = tree; this.size = size; }
+    private ClojureVectorMap(IPersistentVector tree, int size) { this.tree = tree; this.size = size; }
 
     @Override
     @NotNull
-    public ClojureRrbMap<T> insert(int key, T value) {
+    public ClojureVectorMap<T> insert(int key, T value) {
         if (key == tree.length()) {
-            return new ClojureRrbMap<>(tree.cons(value), size + 1);
+            return new ClojureVectorMap<>(tree.cons(value), size + 1);
         }
         if (key < tree.length()) {
-            return new ClojureRrbMap<>(tree.assocN(key, value), tree.nth(key) == null ? size + 1: size);
+            return new ClojureVectorMap<>(tree.assocN(key, value), tree.nth(key) == null ? size + 1: size);
         }
         var tree2 = (ITransientVector) tra.invoke(tree);
         for (int i = 0; i < key - tree.length(); i++) {
             tree2.conj(null);
         }
         tree2.conj(value);
-        return new ClojureRrbMap<>((IPersistentVector) tree2.persistent(), size + 1);
+        return new ClojureVectorMap<>((IPersistentVector) tree2.persistent(), size + 1);
     }
 
     @Override

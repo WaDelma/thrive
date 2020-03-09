@@ -24,7 +24,7 @@ class IntMapTest(val intMap: () -> IntMap<Any>, val desc: String) {
             arrayOf<Any>({ IntImplicitKeyHamtJava<Any>() }, "IntImplicitKeyHamtJava"),
             arrayOf<Any>({ ArrayMap<Any>() }, "ArrayMap"),
             arrayOf<Any>({ RrbMap<Any>() }, "RrbMap"),
-            arrayOf<Any>({ ClojureRrbMap<Any>() }, "ClojureRrbMap"),
+            arrayOf<Any>({ ClojureVectorMap<Any>() }, "ClojureVectorMap"),
             arrayOf<Any>({ ScalaRrbMap<Any>() }, "ScalaRrbMap"),
             arrayOf<Any>({ RadixBalancedTree<Any>() }, "RadixBalancedTree"),
             arrayOf<Any>({ RadixBalancedTreeRedux<Any>() }, "RadixBalancedTreeRedux")
