@@ -89,7 +89,7 @@ public class Mem {
         this.put("IntHamt16Java", () -> fromPersistentIntMap(new IntHamt16Java<>()));
         this.put("IntImplicitKeyHamtKotlin", () -> fromPersistentIntMap(new IntImplicitKeyHamtKotlin<>()));
         this.put("RadixTree", () -> fromPersistentIntMap(new RadixBalancedTree<>()));
-        this.put("RadixTree", () -> fromPersistentIntMap(new RadixBalancedTreeRedux<>()));
+        this.put("RadixTreeRedux", () -> fromPersistentIntMap(new RadixBalancedTreeRedux<>()));
         this.put("PaguroRrbMap", () -> fromPersistentIntMap(new RrbMap<>()));
         this.put("PaguroVectorMap", () -> fromPersistentIntMap(new PersistentVectorMap<>()));
         this.put("PaguroHashMap", () -> unify(PersistentHashMap.<Integer, Integer>empty(), (m, k, v) -> m.val = m.val.assoc(k, v), Holder::getVal, (m, k) -> m.val.containsKey(k)));
