@@ -27,7 +27,7 @@ public final class IntHamt16Java<T> implements IntMap<T> {
     @NotNull
     @Override
     public IntHamt16Java<T> insert(int key, T value) {
-        var pos = 1 << mask(key, 0, BITS);
+        var pos = (short)(1 << mask(key, 0, BITS));
         if (root != null) {
             return new IntHamt16Java<>(root.insert(key, value, 0));
         } else {
@@ -113,10 +113,10 @@ public final class IntHamt16Java<T> implements IntMap<T> {
     }
 
     private static final class Trunk<T> implements Node<T> {
-        private int map;
+        private short map;
         private Object[] children;
 
-        private Trunk(int map, Object[] children) {
+        private Trunk(short map, Object[] children) {
             this.map = map;
             this.children = children;
         }
@@ -137,9 +137,9 @@ public final class IntHamt16Java<T> implements IntMap<T> {
         @SuppressWarnings("unchecked")
         public Trunk<T> insert(int key, T value, int level) {
             var bit = mask(key, BITS * level, BITS);
-            var pos = 1 << bit;
-            var index = index(this.map, pos);
-            if (((map >>> bit) & 1) == 1) {
+            var pos = (short)(1 << bit);
+            var index = indexS(this.map, pos);
+            if (((Short.toUnsignedInt(map) >>> bit) & 1) == 1) {
                 // TODO: Would it be better to not copy the old value? (arrayOfNulls)
                 var childs = children.clone();
                 childs[index] = ((Node<T>) childs[index]).insert(key, value, level + 1);
@@ -149,17 +149,17 @@ public final class IntHamt16Java<T> implements IntMap<T> {
             copyInto(children, childs, 0, 0, index);
             copyInto(children, childs, index + 1, index, children.length);
             var bit2 = mask(key, BITS * (level + 1), BITS);
-            childs[index] = new Leaf<>(1 << bit2, new int[]{key}, new Object[]{value});
-            return new Trunk<>(map | pos, childs);
+            childs[index] = new Leaf<>((short)(1 << bit2), new int[]{key}, new Object[]{value});
+            return new Trunk<>((short)(Short.toUnsignedInt(map) | Short.toUnsignedInt(pos)), childs);
         }
         
         @Override
         @SuppressWarnings("unchecked")
         public T get(int key, int level) {
             var bit = mask(key, BITS * level, BITS);
-            var pos = 1 << bit;
-            if (((map >>> bit) & 1) == 1) {
-                var index = index(this.map, pos);
+            var pos = (short)(1 << bit);
+            if (((Short.toUnsignedInt(map) >>> bit) & 1) == 1) {
+                var index = indexS(this.map, pos);
                 return ((Node<T>)children[index]).get(key, level + 1);
             }
             return null;
@@ -167,11 +167,11 @@ public final class IntHamt16Java<T> implements IntMap<T> {
     }
 
     private static final class Leaf<T> implements Node<T> {
-        private int map;
+        private short map;
         private int[] keys;
         Object[] values;
 
-        private Leaf(int map, int[] keys, Object[] values) {
+        private Leaf(short map, int[] keys, Object[] values) {
             this.map = map;
             this.keys = keys;
             this.values = values;
@@ -190,9 +190,9 @@ public final class IntHamt16Java<T> implements IntMap<T> {
         @SuppressWarnings("unchecked")
         public Node<T> insert(int key, T value, int level) {
             var bit = mask(key, BITS * level, BITS);
-            var pos = 1 << bit;
-            var index = index(this.map, pos);
-            if (((map >>> bit) & 1) == 1) {
+            var pos = (short)(1 << bit);
+            var index = indexS(this.map, pos);
+            if (((Short.toUnsignedInt(map) >>> bit) & 1) == 1) {
                 // There exists value the place we would go in the internal storage
                 if (key == keys[index]) {
                     // They had the same key, so we are going to replace the value
@@ -204,7 +204,7 @@ public final class IntHamt16Java<T> implements IntMap<T> {
                 var children = new Object[keys.length];
                 for (int i = 0; i < children.length; i++) {
                     var bit2 = mask(keys[i], BITS * (level + 1), BITS);
-                    children[i] = new Leaf<>(1 << bit2, new int[]{keys[i]}, new Object[]{values[i]});
+                    children[i] = new Leaf<>((short)(1 << bit2), new int[]{keys[i]}, new Object[]{values[i]});
                 }
                 children[index] = ((Node<T>) children[index]).insert(key, value, level + 1);
                 return new Trunk<>(map, children);
@@ -221,16 +221,16 @@ public final class IntHamt16Java<T> implements IntMap<T> {
             // Insert our key-value pair
             kes[index] = key;
             vals[index] = value;
-            return new Leaf<>(map | pos, kes, vals);
+            return new Leaf<>((short)(Short.toUnsignedInt(map) | Short.toUnsignedInt(pos)), kes, vals);
         }
 
         @Override
         @SuppressWarnings("unchecked")
         public T get(int key, int level) {
             var bit = mask(key, BITS * level, BITS);
-            var pos = 1 << bit;
-            if (((map >>> bit) & 1) == 1) {
-                var index = index(this.map, pos);
+            var pos = (short)(1 << bit);
+            if (((Short.toUnsignedInt(map) >>> bit) & 1) == 1) {
+                var index = indexS(this.map, pos);
                 if (key == keys[index]) {
                     return (T) values[index];
                 }

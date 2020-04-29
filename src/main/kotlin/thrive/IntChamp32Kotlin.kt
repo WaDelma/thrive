@@ -44,11 +44,13 @@ class IntChamp32Kotlin<T> : IntMap<T> {
                 if (index == 0) {
                     val nodes = Integer.bitCount(node.nodeMap)
                     (0 until nodes).forEach {
+                        @Suppress("UNCHECKED_CAST")
                         stack.add(node.values[node.values.lastIndex - it] as Node<T>)
                     }
                 }
                 if (index < datum) {
                     stack.add(node)
+                    @Suppress("UNCHECKED_CAST")
                     return ((node.values[2 * index] as Int) to node.values[2 * index + 1] as T).also {
                         index += 1
                     }
@@ -122,11 +124,13 @@ internal class Node<T>(val nodeMap: Int, val dataMap: Int, val values: Array<Any
                 1 shl mask(values[index] as Int, BITS * (level + 1), BITS),
                 arrayOf(values[index], values[index + 1])
             ).insert(key, value, level + 1) as Any
+            @Suppress("UNCHECKED_CAST")
             return Node(nodeMap or pos, dataMap and pos.inv(), vals as Array<Any>)
         } else if ((nodeMap shr bit) and 1 == 1) {
             // There exists child node that we have to insert into
             val index = this.values.lastIndex - index(this.nodeMap, pos)
             val vals = values.copyOf()
+            @Suppress("UNCHECKED_CAST")
             vals[index] = (values[index] as Node<T>).insert(key, value, level + 1);
             return Node(nodeMap, dataMap, vals)
         }
@@ -141,6 +145,7 @@ internal class Node<T>(val nodeMap: Int, val dataMap: Int, val values: Array<Any
         // Insert our key-value pair
         vals[index] = key
         vals[index + 1] = value as Any
+        @Suppress("UNCHECKED_CAST")
         return Node(nodeMap, dataMap or pos, vals as Array<Any>)
     }
 
@@ -150,11 +155,13 @@ internal class Node<T>(val nodeMap: Int, val dataMap: Int, val values: Array<Any
         if ((dataMap shr bit) and 1 == 1) {
             val index = 2 * index(this.dataMap, pos)
             if (key == values[index]) {
+                @Suppress("UNCHECKED_CAST")
                 return values[index + 1] as T
             }
             return null
         } else if ((nodeMap shr bit) and 1 == 1) {
             val index = this.values.size - 1 - index(this.nodeMap, pos)
+            @Suppress("UNCHECKED_CAST")
             return (values[index] as Node<T>).get(key, level + 1)
         }
         return null

@@ -136,7 +136,7 @@ public final class IntHamt32Java<T> implements IntMap<T> {
         public Trunk<T> insert(int key, T value, int level) {
             var bit = mask(key, BITS * level, BITS);
             var pos = 1 << bit;
-            var index = index(this.map, pos);
+            var index = indexI(this.map, pos);
             if (((map >>> bit) & 1) == 1) {
                 // TODO: Would it be better to not copy the old value? (arrayOfNulls)
                 var childs = children.clone();
@@ -157,7 +157,7 @@ public final class IntHamt32Java<T> implements IntMap<T> {
             var bit = mask(key, BITS * level, BITS);
             var pos = 1 << bit;
             if (((map >>> bit) & 1) == 1) {
-                var index = index(this.map, pos);
+                var index = indexI(this.map, pos);
                 return ((Node<T>)children[index]).get(key, level + 1);
             }
             return null;
@@ -189,7 +189,7 @@ public final class IntHamt32Java<T> implements IntMap<T> {
         public Node<T> insert(int key, T value, int level) {
             var bit = mask(key, BITS * level, BITS);
             var pos = 1 << bit;
-            var index = index(this.map, pos);
+            var index = indexI(this.map, pos);
             if (((map >>> bit) & 1) == 1) {
                 // There exists value the place we would go in the internal storage
                 if (key == keys[index]) {
@@ -228,7 +228,7 @@ public final class IntHamt32Java<T> implements IntMap<T> {
             var bit = mask(key, BITS * level, BITS);
             var pos = 1 << bit;
             if (((map >>> bit) & 1) == 1) {
-                var index = index(this.map, pos);
+                var index = indexI(this.map, pos);
                 if (key == keys[index]) {
                     return (T) values[index];
                 }

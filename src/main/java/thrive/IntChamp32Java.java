@@ -144,7 +144,7 @@ public final class IntChamp32Java<T> implements IntMap<T> {
             var pos = 1 << bit;
             if (((dataMap >>> bit) & 1) == 1) {
                 // There exists key-value pair in the place we would go in the internal storage
-                var index = 2 * index(this.dataMap, pos);
+                var index = 2 * indexI(this.dataMap, pos);
                 if (key == (int) values[index]) {
                     // They had the same key, so we are going to replace the value
                     // TODO: Would it be better to not copy the old value? (arrayOfNulls)
@@ -160,7 +160,7 @@ public final class IntChamp32Java<T> implements IntMap<T> {
                 var datum = Integer.bitCount(dataMap);
                 copyInto(values, vals, index, index + 2, datum * 2);
                 // Copy children nodes
-                var nodeIndex = this.values.length - 1 - index(this.nodeMap | pos, pos);
+                var nodeIndex = this.values.length - 1 - indexI(this.nodeMap | pos, pos);
                 copyInto(values, vals, nodeIndex, nodeIndex + 1, values.length);
                 var nodes = Integer.bitCount(nodeMap);
                 copyInto(values, vals, vals.length - nodes - 1, values.length - nodes, nodeIndex + 1);
@@ -173,13 +173,13 @@ public final class IntChamp32Java<T> implements IntMap<T> {
                 return new Node<>(nodeMap | pos, dataMap & ~pos, vals);
             } else if (((nodeMap >>> bit) & 1) == 1) {
                 // There exists child node that we have to insert into
-                var index = this.values.length - 1 - index(this.nodeMap, pos);
+                var index = this.values.length - 1 - indexI(this.nodeMap, pos);
                 var vals = values.clone();
                 vals[index] = ((Node<T>) values[index]).insert(key, value, level + 1);
                 return new Node<>(nodeMap, dataMap, vals);
             }
             // Now we can just save us into the internal storage
-            var index = 2 * index(this.dataMap, pos);
+            var index = 2 * indexI(this.dataMap, pos);
             // Our key-value will take two more slots
             var vals = new Object[values.length + 2];
             // Copy slots before us
@@ -197,13 +197,13 @@ public final class IntChamp32Java<T> implements IntMap<T> {
             var bit = mask(key, BITS * level, BITS);
             var pos = 1 << bit;
             if (((dataMap >>> bit) & 1) == 1) {
-                var index = 2 * index(this.dataMap, pos);
+                var index = 2 * indexI(this.dataMap, pos);
                 if (key == (int) values[index]) {
                     return (T) values[index + 1];
                 }
                 return null;
             } else if (((nodeMap >>> bit) & 1) == 1) {
-                var index = this.values.length - 1 - index(this.nodeMap, pos);
+                var index = this.values.length - 1 - indexI(this.nodeMap, pos);
                 return ((Node<T>) values[index]).get(key, level + 1);
             }
             return null;

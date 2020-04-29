@@ -17,9 +17,9 @@ class IntMapTest(val intMap: () -> IntMap<Any>, val desc: String) {
             arrayOf<Any>({ IntHamt32Kotlin<Any>() }, "IntHamt32Kotlin"),
             arrayOf<Any>({ IntChamp32Java<Any>() }, "IntChamp32Java"),
             arrayOf<Any>({ IntChamp64Java<Any>() }, "IntChamp64Java"),
+            arrayOf<Any>({ IntHamt16Java<Any>() }, "IntHamt16Java"),
             arrayOf<Any>({ IntHamt32Java<Any>() }, "IntHamt32Java"),
             arrayOf<Any>({ IntHamt64Java<Any>() }, "IntHamt64Java"),
-            arrayOf<Any>({ IntHamt16Java<Any>() }, "IntHamt16Java"),
             arrayOf<Any>({ IntImplicitKeyHamtKotlin<Any>() }, "IntImplicitKeyHamtKotlin"),
             arrayOf<Any>({ IntImplicitKeyHamtJava<Any>() }, "IntImplicitKeyHamtJava"),
             arrayOf<Any>({ ArrayMap<Any>() }, "ArrayMap"),
@@ -27,14 +27,15 @@ class IntMapTest(val intMap: () -> IntMap<Any>, val desc: String) {
             arrayOf<Any>({ ClojureVectorMap<Any>() }, "ClojureVectorMap"),
             arrayOf<Any>({ ScalaRrbMap<Any>() }, "ScalaRrbMap"),
             arrayOf<Any>({ RadixBalancedTree<Any>() }, "RadixBalancedTree"),
-            arrayOf<Any>({ RadixBalancedTreeRedux<Any>() }, "RadixBalancedTreeRedux")
+            arrayOf<Any>({ RadixBalancedTreeRedux<Any>() }, "RadixBalancedTreeRedux"),
+            arrayOf<Any>({ RrbTree<Any>() }, "RrbTree")
         )
     }
 
     @Test
     fun `empty map doesn't contain value for key 0`() {
         val map = intMap()
-        assertEquals(null, map.get(0))
+        assertEquals(null, map[0])
     }
 
     @Test
@@ -44,8 +45,8 @@ class IntMapTest(val intMap: () -> IntMap<Any>, val desc: String) {
         map = map.insert(x, "v$x")
         val y = 32 + x
         map = map.insert(y, "v$y")
-        assertEquals("v$x", map.get(x))
-        assertEquals("v$y", map.get(y))
+        assertEquals("v$x", map[x])
+        assertEquals("v$y", map[y])
     }
 
     @Test
@@ -53,10 +54,21 @@ class IntMapTest(val intMap: () -> IntMap<Any>, val desc: String) {
         var map = intMap()
         (0..32).forEach {
             map = map.insert(it, "v$it")
-            assertEquals("v$it", map.get(it))
+            assertEquals("v$it", map[it])
         }
         (0..32).forEach {
-            assertEquals("v$it", map.get(it))
+            assertEquals("v$it", map[it])
+        }
+    }
+
+    @Test
+    fun `getting values out of range for keys from 0 to 32`() {
+        var map = intMap()
+        (0..32).forEach {
+            map = map.insert(it, "v$it")
+        }
+        (33..1000000).forEach {
+            assertEquals(null, map[it])
         }
     }
 
@@ -65,10 +77,10 @@ class IntMapTest(val intMap: () -> IntMap<Any>, val desc: String) {
         var map = intMap()
         (0..31).forEach {
             map = map.insert(it, "v$it")
-            assertEquals("v$it", map.get(it))
+            assertEquals("v$it", map[it])
         }
         (0..31).forEach {
-            assertEquals("v$it", map.get(it))
+            assertEquals("v$it", map[it])
         }
     }
 
@@ -78,8 +90,20 @@ class IntMapTest(val intMap: () -> IntMap<Any>, val desc: String) {
         (0..63).forEach {
             map = map.insert(it, "v$it")
             (0..it).reversed().forEach {
-                assertEquals("v$it", map.get(it))
+                assertEquals("v$it", map[it])
             }
+        }
+    }
+    @Test
+    fun `adding 64 random values`() {
+        var map = intMap()
+        val rand = Random(77)
+        val vals = generateSequence { rand.nextInt(128) }.distinct().take(64).toSet()
+        vals.forEach {
+            map = map.insert(it, "v$it")
+        }
+        vals.forEach {
+            assertEquals("v$it", map[it])
         }
     }
 
@@ -89,7 +113,7 @@ class IntMapTest(val intMap: () -> IntMap<Any>, val desc: String) {
         (0..63).reversed().forEach {
             map = map.insert(it, "v$it")
             (it..63).forEach {
-                assertEquals("v$it", map.get(it))
+                assertEquals("v$it", map[it])
             }
         }
     }
@@ -100,7 +124,7 @@ class IntMapTest(val intMap: () -> IntMap<Any>, val desc: String) {
         (0..127).forEach {
             map = map.insert(it, "v$it")
             (0..it).reversed().forEach {
-                assertEquals("v$it", map.get(it))
+                assertEquals("v$it", map[it])
             }
         }
     }
@@ -111,7 +135,7 @@ class IntMapTest(val intMap: () -> IntMap<Any>, val desc: String) {
         (0..127).reversed().forEach {
             map = map.insert(it, "v$it")
             (it..127).forEach {
-                assertEquals("v$it", map.get(it))
+                assertEquals("v$it", map[it])
             }
         }
     }
@@ -123,7 +147,7 @@ class IntMapTest(val intMap: () -> IntMap<Any>, val desc: String) {
         (0..255).forEach {
             map = map.insert(keys[it], "v${keys[it]}_$it")
             (0..it).reversed().forEach {
-                assertEquals("v${keys[it]}_$it", map.get(keys[it]))
+                assertEquals("v${keys[it]}_$it", map[keys[it]])
             }
         }
     }
@@ -136,7 +160,7 @@ class IntMapTest(val intMap: () -> IntMap<Any>, val desc: String) {
         added.forEachIndexed { i, key ->
             map = map.insert(key, "v$key $i")
             added.asSequence().take(i).forEachIndexed {i, key ->
-                assertEquals("v$key $i", map.get(key))
+                assertEquals("v$key $i", map[key])
             }
         }
     }
@@ -151,7 +175,7 @@ class IntMapTest(val intMap: () -> IntMap<Any>, val desc: String) {
             map = map.insert(it, "v$it")
         }
         missing.forEach {
-            assertEquals(null, map.get(it))
+            assertEquals(null, map[it])
         }
     }
 
@@ -173,7 +197,7 @@ class IntMapTest(val intMap: () -> IntMap<Any>, val desc: String) {
             if (it % 1000000 == 0) {
                 println(it.toFloat() / amount.toFloat())
             }
-            assertEquals(it, map.get(it))
+            assertEquals(it, map[it])
         }
     }
 }

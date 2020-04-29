@@ -172,7 +172,7 @@ public class IntImplicitKeyHamtJava<T> implements IntMap<T> {
             }
             var bit = mask(key, BITS * level, BITS);
             var pos = 1 << bit;
-            var index = index(this.map, pos);
+            var index = indexI(this.map, pos);
             if (((map >>> bit) & 1) == 1) {
                 var childs = children.clone();
                 childs[index] = ((Node3j<T>)childs[index]).insert(key, value, level + 1);
@@ -190,7 +190,7 @@ public class IntImplicitKeyHamtJava<T> implements IntMap<T> {
             var bit = mask(key, BITS * level, BITS);
             var pos = 1 << bit;
             if (((map >>> bit) & 1) == 1) {
-                var index = index(this.map, pos);
+                var index = indexI(this.map, pos);
                 return ((Node3j<T>)children[index]).get(key, level + 1);
             }
             return null;
@@ -221,7 +221,7 @@ public class IntImplicitKeyHamtJava<T> implements IntMap<T> {
         public Node3j<T> insert(int key, T value, int level) {
             var bit = mask(key, BITS * level, BITS);
             var pos = 1 << bit;
-            var index = index(this.map, pos);
+            var index = indexI(this.map, pos);
             if (((map >>> bit) & 1) == 1) {
                 var vals = values.clone();
                 vals[index] = value;
@@ -239,7 +239,7 @@ public class IntImplicitKeyHamtJava<T> implements IntMap<T> {
             var bit = mask(key, BITS * level, BITS);
             var pos = 1 << bit;
             if (((map >>> bit) & 1) == 1) {
-                var index = index(this.map, pos);
+                var index = indexI(this.map, pos);
                 return (T) values[index];
             }
             return null;

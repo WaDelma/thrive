@@ -51,6 +51,7 @@ class IntImplicitKeyHamtKotlin<T> : IntMap<T> {
                     )
                     is Leaf3 -> {
                         if (index < node.values.size) {
+                            @Suppress("UNCHECKED_CAST")
                             return ((index shl (level * BITS)) or i) to (node.values[index] as T).also {
                                 stack.add(StackElem(node, i, level))
                                 index += 1
@@ -105,6 +106,7 @@ private class Trunk3<T>(val map: Int, val children: Array<Node3<T>>) : Node3<T>(
         children.copyInto(childs, 0, 0, index)
         children.copyInto(childs, index + 1, index, children.size)
         childs[index] = Trunk3<T>(0, arrayOf()).insert(key, value, level + 1)
+        @Suppress("UNCHECKED_CAST")
         return Trunk3(map or pos, childs as Array<Node3<T>>)
     }
     override fun get(key: Int, level: Int): T? {
@@ -138,6 +140,7 @@ private class Leaf3<T>(val map: Int, val values: Array<Any>) : Node3<T>() {
         values.copyInto(vals, 0, 0, index)
         values.copyInto(vals, index + 1, index, values.size)
         vals[index] = value
+        @Suppress("UNCHECKED_CAST")
         return Leaf3(map or pos, vals as Array<Any>)
     }
     override fun get(key: Int, level: Int): T? {
@@ -145,6 +148,7 @@ private class Leaf3<T>(val map: Int, val values: Array<Any>) : Node3<T>() {
         val pos = 1 shl bit
         if ((map shr bit) and 1 == 1) {
             val index = index(this.map, pos)
+            @Suppress("UNCHECKED_CAST")
             return values[index] as T
         }
         return null

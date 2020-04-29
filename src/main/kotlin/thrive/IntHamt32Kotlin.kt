@@ -41,6 +41,7 @@ class IntHamt32Kotlin<T> : IntMap<T> {
                     is Trunk -> stack.addAll(node.children)
                     is Leaf -> {
                         if (index < node.values.size) {
+                            @Suppress("UNCHECKED_CAST")
                             return node.keys[index] to (node.values[index] as T).also {
                                 stack.add(node)
                                 index += 1
@@ -93,6 +94,7 @@ private class Trunk<T>(val map: Int, val children: Array<Node2<T>>): Node2<T>() 
         children.copyInto(childs, index + 1, index, children.size)
         val bit2 = mask(key, BITS * (level + 1), BITS)
         childs[index] = Leaf(1 shl bit2, intArrayOf(key), arrayOf(value as Any))
+        @Suppress("UNCHECKED_CAST")
         return Trunk(map or pos, childs as Array<Node2<T>>)
     }
     override fun get(key: Int, level: Int): T? {
@@ -128,11 +130,12 @@ private class Leaf<T>(val map: Int, val keys: IntArray, val values: Array<Any>):
             }
 
             val children = arrayOfNulls<Node2<T>>(keys.size)
-            for (i in 0..children.size - 1) {
+            for (i in children.indices) {
                 val bit2 = mask(keys[i], BITS * (level + 1), BITS)
                 children[i] = Leaf<T>(1 shl bit2, intArrayOf(keys[i]), arrayOf(values[i]))
             }
             children[index] = children[index]!!.insert(key, value, level + 1)
+            @Suppress("UNCHECKED_CAST")
             return Trunk(map, children as Array<Node2<T>>)
         }
         // Now we can just save us into the internal storage
@@ -147,6 +150,7 @@ private class Leaf<T>(val map: Int, val keys: IntArray, val values: Array<Any>):
         // Insert our key-value pair
         kes[index] = key
         vals[index] = value as Any
+        @Suppress("UNCHECKED_CAST")
         return Leaf(map or pos, kes, vals as Array<Any>)
     }
     override fun get(key: Int, level: Int): T? {
@@ -155,6 +159,7 @@ private class Leaf<T>(val map: Int, val keys: IntArray, val values: Array<Any>):
         if ((map shr bit) and 1 == 1) {
             val index = index(this.map, pos)
             if (key == keys[index]) {
+                @Suppress("UNCHECKED_CAST")
                 return values[index] as T
             }
         }
