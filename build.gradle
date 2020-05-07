@@ -77,7 +77,7 @@ tasks {
         group = "mem"
         classpath = sourceSets.mem.runtimeClasspath
         main = "Mem"
-        maxHeapSize = "128G"
+        maxHeapSize = "16G"
     }
     clean {
         doFirst {
@@ -197,6 +197,15 @@ tasks {
                                 path: 'thrive.RadixBalancedTreeRedux'
                                 insert: 'insert'
                                 name: 'RadixBalancedTreeRedux'
+                                iterator: 'entries'
+                                get: 'get'
+                            },
+                            {
+                                type: 'RrbTree<Integer>'
+                                creator: 'new RrbTree<Integer>()'
+                                path: 'thrive.RrbTree'
+                                insert: 'insert'
+                                name: 'RrbTree'
                                 iterator: 'entries'
                                 get: 'get'
                             },

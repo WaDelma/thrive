@@ -39,6 +39,29 @@ class IntMapTest(val intMap: () -> IntMap<Any>, val desc: String) {
     }
 
     @Test
+    fun `replacing existing value`() {
+        var map = intMap()
+        map = map.insert(42, "v4")
+        val map2 = map.insert(42, "v2")
+        assertEquals("v2", map2[42])
+    }
+
+    @Test
+    fun `replacing large number of existing values`() {
+        var map = intMap()
+        (0..255).forEach {
+            map = map.insert(it, "v$it")
+        }
+        val keys = (0..255).toList().shuffled(Random(42))
+        (0..255).forEach {
+            map = map.insert(keys[it], "v${keys[it]}_$it")
+            (0..it).reversed().forEach { i ->
+                assertEquals("v${keys[i]}_$i", map[keys[i]])
+            }
+        }
+    }
+
+    @Test
     fun `adding two values with same remainder under modulus 32`() {
         var map = intMap()
         val x = 4;
@@ -68,7 +91,7 @@ class IntMapTest(val intMap: () -> IntMap<Any>, val desc: String) {
             map = map.insert(it, "v$it")
         }
         (33..1000000).forEach {
-            assertEquals(null, map[it])
+            assertEquals(null, map[it], "$it")
         }
     }
 
@@ -89,11 +112,12 @@ class IntMapTest(val intMap: () -> IntMap<Any>, val desc: String) {
         var map = intMap()
         (0..63).forEach {
             map = map.insert(it, "v$it")
-            (0..it).reversed().forEach {
-                assertEquals("v$it", map[it])
+            (0..it).reversed().forEach { i ->
+                assertEquals("v$i", map[i])
             }
         }
     }
+
     @Test
     fun `adding 64 random values`() {
         var map = intMap()
@@ -112,8 +136,8 @@ class IntMapTest(val intMap: () -> IntMap<Any>, val desc: String) {
         var map = intMap()
         (0..63).reversed().forEach {
             map = map.insert(it, "v$it")
-            (it..63).forEach {
-                assertEquals("v$it", map[it])
+            (it..63).forEach { i ->
+                assertEquals("v$i", map[i])
             }
         }
     }
@@ -123,8 +147,8 @@ class IntMapTest(val intMap: () -> IntMap<Any>, val desc: String) {
         var map = intMap()
         (0..127).forEach {
             map = map.insert(it, "v$it")
-            (0..it).reversed().forEach {
-                assertEquals("v$it", map[it])
+            (0..it).reversed().forEach { i ->
+                assertEquals("v$i", map[i])
             }
         }
     }
@@ -134,8 +158,8 @@ class IntMapTest(val intMap: () -> IntMap<Any>, val desc: String) {
         var map = intMap()
         (0..127).reversed().forEach {
             map = map.insert(it, "v$it")
-            (it..127).forEach {
-                assertEquals("v$it", map[it])
+            (it..127).forEach { i ->
+                assertEquals("v$i", map[i])
             }
         }
     }
@@ -146,8 +170,8 @@ class IntMapTest(val intMap: () -> IntMap<Any>, val desc: String) {
         val keys = (0..255).toList().shuffled(Random(42))
         (0..255).forEach {
             map = map.insert(keys[it], "v${keys[it]}_$it")
-            (0..it).reversed().forEach {
-                assertEquals("v${keys[it]}_$it", map[keys[it]])
+            (0..it).reversed().forEach { i ->
+                assertEquals("v${keys[i]}_$i", map[keys[i]])
             }
         }
     }
@@ -159,8 +183,8 @@ class IntMapTest(val intMap: () -> IntMap<Any>, val desc: String) {
         val added = generateSequence { rand.nextInt(1000000) }.distinct().take(5000).toSet()
         added.forEachIndexed { i, key ->
             map = map.insert(key, "v$key $i")
-            added.asSequence().take(i).forEachIndexed {i, key ->
-                assertEquals("v$key $i", map[key])
+            added.asSequence().take(i).forEachIndexed {ii, kkey ->
+                assertEquals("v$kkey $ii", map[kkey])
             }
         }
     }

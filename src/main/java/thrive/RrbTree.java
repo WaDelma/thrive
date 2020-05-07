@@ -5,6 +5,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class RrbTree<T> implements IntMap<T> {
     private static int FACTOR = 32;
@@ -55,32 +57,30 @@ public class RrbTree<T> implements IntMap<T> {
         }
         var node = root;
         var idx = key;
-        for (int l = levels; l > 0; l--) {
+        var shift = BITS * levels;
+        for (int i = 0; i < levels; i += 1) {
             var last = node.length - 1;
-            var i = radixIndex(idx, l);
+            int ix;
             if (node[last] instanceof int[]) {
                 var sizes = (int[]) node[last];
-                var bidx = getIndex(sizes, idx);
-                node = cast(node[bidx]);
-                idx = idx - (bidx == 0 ? 0 : sizes[bidx - 1]);
-            } else if (i < node.length) {
-                node = cast(node[i]);
+                ix = findIndex(sizes, idx);
+                if (ix > 0) {
+                    idx -= sizes[ix - 1];
+                }
             } else {
-                return null;
+                ix = radixIndexShift(idx, shift);
+                shift -= BITS;
             }
+            node = cast(node[ix]);
         }
-        var i = idx & MASK;
-        if (i < node.length) {
-            return cast(node[i]);
-        }
-        return null;
+        return cast(node[idx & MASK]);
     }
 
-    private int radixIndex(int idx, int level) {
-        return (idx >> (BITS * level)) & MASK;
+    private int radixIndexShift(int idx, int shift) {
+        return (idx >> shift) & MASK;
     }
 
-    private int getIndex(int[] sizes, int idx) {
+    private int findIndex(int[] sizes, int idx) {
         var low = 0;
         var high = sizes.length;
         while (LINEAR_TRESSHOLD < high - low) {
@@ -113,44 +113,43 @@ public class RrbTree<T> implements IntMap<T> {
         return newTree.append(value);
     }
 
-    private RrbTree<T> updated(int key, T value) {
-        if (root == null) {
+    public RrbTree<T> updated(int key, T value) {
+        if (root == null || key >= size) {
             return this;
         }
-        var node = updateTree(root, key, value, levels);
+        var node = updateTree(root, key, value, levels * BITS);
         if (node == null) {
             return this;
         }
-        return new RrbTree<T>(node, size, levels);
+        return new RrbTree<>(node, size, levels);
     }
 
-    private Object[] updateTree(Object[] node, int key, T value, int level) {
-        if (level == 0) {
+    private Object[] updateTree(Object[] node, int key, T value, int shift) {
+        if (shift == 0) {
+            var val = node[key & MASK];
+            if (Objects.equals(val, value)) {
+                return null;
+            }
             var newNode = Arrays.copyOf(node, node.length);
             newNode[key & MASK] = value;
             return newNode;
         } else {
             var last = node.length - 1;
+            int ix;
             if (node[last] instanceof int[]) {
                 var sizes = (int[]) node[last];
-                var bidx = getIndex(sizes, key);
-                return updateNode(node, key, value, level - 1, bidx);
+                ix = findIndex(sizes, key);
             } else {
-                var idx = radixIndex(key, level);
-                return updateNode(node, key, value, level - 1, idx);
+                ix = radixIndexShift(key, shift);
             }
+            var res = updateTree(cast(node[ix]), key, value, shift - BITS);
+            if (res == null) {
+                return null;
+            }
+            var n = Arrays.copyOf(node, node.length);
+            n[ix] = res;
+            return n;
         }
-    }
-
-    @Nullable
-    private Object[] updateNode(Object[] node, int key, T value, int level, int idx) {
-        var newNode = updateTree(cast(node[idx]), key, value, level);
-        if (newNode == null) {
-            return null;
-        }
-        var n = Arrays.copyOf(node, node.length);
-        n[idx] = newNode;
-        return n;
     }
 
     public RrbTree<T> append(T value) {
@@ -163,8 +162,8 @@ public class RrbTree<T> implements IntMap<T> {
         }
         return new RrbTree<>(
             new Object[] {
-                    root,
-                    single(value, levels)
+                root,
+                single(value, levels)
             },
             size + 1,
             levels + 1
@@ -179,11 +178,11 @@ public class RrbTree<T> implements IntMap<T> {
             return this;
         }
         var fst = root;
-        for (int l = levels; l < other.levels; l++) {
+        for (int l = levels; l < other.levels; l += 1) {
             fst = new Object[] {fst};
         }
         var snd = other.root;
-        for (int l = other.levels; l < levels; l++) {
+        for (int l = other.levels; l < levels; l += 1) {
             snd = new Object[] {snd};
         }
         var newLevels = Math.max(levels, other.levels);
@@ -202,6 +201,11 @@ public class RrbTree<T> implements IntMap<T> {
             return mergedLeaves(left, right);
         }
         Object[] merged;
+        // TODO: Non-radix node.
+        if (left[left.length - 1] instanceof int[]) {
+            // lastLeft is left.length - 2
+            // TODO: Do we merge part of the right to the left here? Or do we delay it?
+        }
         var lastLeft = (Object[]) left[left.length - 1];
         var firstRight = (Object[]) right[0];
         if (level == 1) {
@@ -210,22 +214,30 @@ public class RrbTree<T> implements IntMap<T> {
             merged = mergedTrees(lastLeft, firstRight,level - 1);
         }
         var leftInit = Arrays.copyOf(left, left.length - 1);
-        var rightInit = Arrays.copyOfRange(right, 1, right.length);
-        return mergeRebalance(leftInit, merged, rightInit, level);
+        var rightTail = Arrays.copyOfRange(right, 1, right.length);
+        return mergeRebalance(leftInit, merged, rightTail, level);
     }
 
     private Object[] mergeRebalance(Object[] left, Object[] center, Object[] right, int level) {
-        var merged = Arrays.copyOf(left, left.length + center.length + right.length);
-        System.arraycopy(center, 0, merged, left.length, center.length);
-        System.arraycopy(right, 0, merged, left.length + center.length, right.length);
         var newNode = new ArrayList<>(FACTOR);
         var newSubtree = new ArrayList<>(FACTOR);
         var newRoot = new ArrayList<>(FACTOR);
-        for (var subtree: merged) {
+        for (var i = 0; i < left.length + center.length + right.length; i += 1) {
+            Object subtree;
+            if (i < left.length) {
+                subtree = left[i];
+            } else {
+                var j = i - left.length;
+                if (j < center.length) {
+                    subtree = center[j];
+                } else {
+                    subtree = right[j - center.length];
+                }
+            }
             for (var node: (Object[]) subtree) {
                 if (newNode.size() == FACTOR) {
                     if (newSubtree.size() == FACTOR) {
-                        newRoot.add(computeSizes(newSubtree, level));
+                        newRoot.add(computeSizes(newSubtree, level - 1));
                         newSubtree.clear();
                     }
                     newSubtree.add(computeSizes(newNode, level));
@@ -245,11 +257,14 @@ public class RrbTree<T> implements IntMap<T> {
 
     // So did non-radix node taint the path from it to root?
     private Object[] computeSizes(ArrayList<Object> newSubtree, int level) {
+//        if (newSubtree.size() == FACTOR) {
+//            return newSubtree.toArray();
+//        }
         var size = newSubtree.size();
         var res = Arrays.copyOf(newSubtree.toArray(), size + 1);
         var newSizes = new int[size];
         var sum = 0;
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < size; i += 1) {
             var child = newSubtree.get(i);
             if (child instanceof Object[]) {
                 var c = (Object[]) child;
@@ -294,9 +309,8 @@ public class RrbTree<T> implements IntMap<T> {
                 var newNode = Arrays.copyOf(node, node.length + 1);
                 newNode[node.length] = value;
                 return newNode;
-            } else {
-                return null;
             }
+            return null;
         } else {
             var last = node.length - 1;
             if (node[last] instanceof int[]) {
@@ -316,11 +330,10 @@ public class RrbTree<T> implements IntMap<T> {
                     n[newLast - 1] = single(value, level - 1);
                     n[newLast] = newSizes;
                     return n;
-                } else {
-                    var n = Arrays.copyOf(node, node.length);
-                    n[last] = single(value, level - 1);
-                    return n;
                 }
+                var n = Arrays.copyOf(node, node.length);
+                n[last] = single(value, level - 1);
+                return n;
             } else {
                 var newNode = appendTree(cast(node[last]), value, level - 1);
                 if (newNode != null) {
@@ -333,9 +346,8 @@ public class RrbTree<T> implements IntMap<T> {
                     var n = Arrays.copyOf(node, node.length + 1);
                     n[newLast] = single(value, level - 1);
                     return n;
-                } else {
-                    return null;
                 }
+                return null;
             }
         }
     }
@@ -363,5 +375,54 @@ public class RrbTree<T> implements IntMap<T> {
     }
 
     @Override
-    public void debug() { }
+    public void debug() {
+        if (root == null) {
+            System.out.println("null");
+        } else {
+            var cur = (Object)root;
+            var depth = 0;
+            while (cur instanceof Object[]) {
+                depth += 1;
+                cur = ((Object[]) cur)[0];
+            }
+            System.out.print(depth + " ");
+            debugRec(root, levels);
+        }
+    }
+
+    private void debugRec(Object[] node, int level) {
+        var pad = Stream.generate(() -> " ").limit(levels - level).collect(Collectors.joining());
+        System.out.print(pad);
+        System.out.print(level + " ");
+        if (level == 0) {
+            for (var n: node) {
+                if (n == null) {
+                    System.out.print("n");
+                } else if (!(n instanceof int[])) {
+                    System.out.print("o");
+                }
+            }
+            System.out.println();
+            return;
+        }
+        for (var n: node) {
+            if (n == null) {
+                System.out.print("n");
+            } else if (n instanceof Object[]) {
+                var c = (Object[]) n;
+                if (c[c.length - 1] instanceof int[]) {
+                    System.out.print("x");
+                } else {
+                    System.out.print("r");
+                }
+            }
+        }
+        System.out.println("(");
+        for (var n: node) {
+            if (n != null && !(n instanceof int[])) {
+                debugRec((Object[]) n, level - 1);
+            }
+        }
+        System.out.println(pad + ")");
+    }
 }

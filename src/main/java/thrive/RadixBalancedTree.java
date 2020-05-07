@@ -46,6 +46,9 @@ public class RadixBalancedTree<T> implements IntMap<T> {
     @Override
     @SuppressWarnings("unchecked")
     public T get(int key) {
+        if (key >= size) {
+            return null;
+        }
         return (T) root.get(key, height);
     }
 

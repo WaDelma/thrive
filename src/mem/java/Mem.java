@@ -88,6 +88,7 @@ public class Mem {
         this.put("IntHamt64Java", () -> fromPersistentIntMap(new IntHamt64Java<>()));
         this.put("IntHamt16Java", () -> fromPersistentIntMap(new IntHamt16Java<>()));
         this.put("IntImplicitKeyHamtKotlin", () -> fromPersistentIntMap(new IntImplicitKeyHamtKotlin<>()));
+        this.put("RelaxedRadixBalancedTree", () -> fromPersistentIntMap(new RrbTree<>()));
         this.put("RadixTree", () -> fromPersistentIntMap(new RadixBalancedTree<>()));
         this.put("RadixTreeRedux", () -> fromPersistentIntMap(new RadixBalancedTreeRedux<>()));
         this.put("PaguroRrbMap", () -> fromPersistentIntMap(new RrbMap<>()));
